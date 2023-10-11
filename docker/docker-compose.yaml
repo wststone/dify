@@ -276,4 +276,4 @@ services:
       - api
       - web
     ports:
-      - "80:80"
+      - "6789:80"
