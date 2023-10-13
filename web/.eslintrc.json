@@ -1,15 +1,11 @@
 {
-  "extends": [
-    "next",
-    "@antfu"
-  ],
+  "extends": ["next"],
   "rules": {
-    "@typescript-eslint/consistent-type-definitions": [
-      "error",
-      "type"
-    ],
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     "no-console": "off",
     "indent": "off",
+    "@typescript-eslint/quotes": 0,
+    "@typescript-eslint/semi": 0,
     "@typescript-eslint/indent": [
       "error",
       2,

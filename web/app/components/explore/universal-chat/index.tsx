@@ -717,9 +717,9 @@ const Main: FC<IMainProps> = () => {
   return (
     <div className='bg-gray-100'>
       <div
-        className={cn(
-          'flex rounded-t-2xl bg-white overflow-hidden rounded-b-2xl',
-        )}
+        className={
+          'flex rounded-t-2xl bg-white overflow-hidden rounded-b-2xl'
+        }
         style={{
           boxShadow: '0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)',
         }}
@@ -753,7 +753,7 @@ const Main: FC<IMainProps> = () => {
                     plugins={plugins}
                     dataSets={dataSets}
                   />
-                  <div className={cn('flex w-8 h-8 justify-center items-center shrink-0 rounded-lg border border-gray-200')} onClick={e => e.stopPropagation()}>
+                  <div className={'flex w-8 h-8 justify-center items-center shrink-0 rounded-lg border border-gray-200'} onClick={e => e.stopPropagation()}>
                     <ItemOperation
                       key={controlItemOpHide}
                       className='!w-8 !h-8'
@@ -768,7 +768,7 @@ const Main: FC<IMainProps> = () => {
             </div>
           )}
           <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto  mb-3.5 overflow-hidden')}>
-            <div className={cn('pc:w-[794px] max-w-full mobile:w-full mx-auto h-full overflow-y-auto')} ref={chatListDomRef}>
+            <div className={'pc:w-[794px] max-w-full mobile:w-full mx-auto h-full overflow-y-auto'} ref={chatListDomRef}>
               <Chat
                 isShowConfigElem={isNewConversation && chatList.length === 0}
                 configElem={<Init
