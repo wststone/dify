@@ -75,6 +75,9 @@ class AppModelConfigService:
         if 'opening_statement' not in config or not config["opening_statement"]:
             config["opening_statement"] = ""
 
+        if 'opening_suggestions' not in config or not config["opening_suggestions"]:
+            config["opening_suggestions"] = []
+
         if not isinstance(config["opening_statement"], str):
             raise ValueError("opening_statement must be of string type")
 
@@ -338,6 +341,7 @@ class AppModelConfigService:
         # Filter out extra parameters
         filtered_config = {
             "opening_statement": config["opening_statement"],
+            "opening_suggestions": config["opening_suggestions"],
             "suggested_questions": config["suggested_questions"],
             "suggested_questions_after_answer": config["suggested_questions_after_answer"],
             "speech_to_text": config["speech_to_text"],

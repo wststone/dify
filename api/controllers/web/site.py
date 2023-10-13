@@ -13,6 +13,7 @@ class AppSiteApi(WebApiResource):
 
     model_config_fields = {
         'opening_statement': fields.String,
+        'opening_suggestions': fields.Raw(attribute='opening_suggestions_list'),
         'suggested_questions': fields.Raw(attribute='suggested_questions_list'),
         'suggested_questions_after_answer': fields.Raw(attribute='suggested_questions_after_answer_dict'),
         'more_like_this': fields.Raw(attribute='more_like_this_dict'),

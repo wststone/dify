@@ -109,6 +109,10 @@ class AppModelConfig(db.Model):
         return json.loads(self.model) if self.model else None
 
     @property
+    def opening_suggestions_list(self) -> list:
+        return json.loads(self.opening_suggestions) if self.opening_suggestions else []
+
+    @property
     def suggested_questions_list(self) -> list:
         return json.loads(self.suggested_questions) if self.suggested_questions else []
 
@@ -162,7 +166,7 @@ class AppModelConfig(db.Model):
             "model_id": "",
             "configs": {},
             "opening_statement": self.opening_statement,
-            "opening_suggestions": self.opening_suggestions,
+            "opening_suggestions": self.opening_suggestions_list,
             "suggested_questions": self.suggested_questions_list,
             "suggested_questions_after_answer": self.suggested_questions_after_answer_dict,
             "speech_to_text": self.speech_to_text_dict,
@@ -185,7 +189,7 @@ class AppModelConfig(db.Model):
         self.model_id = ""
         self.configs = {}
         self.opening_statement = model_config['opening_statement']
-        self.opening_suggestions = model_config['opening_suggestions']
+        self.opening_suggestions = json.dumps(model_config['opening_suggestions'])
         self.suggested_questions = json.dumps(model_config['suggested_questions'])
         self.suggested_questions_after_answer = json.dumps(model_config['suggested_questions_after_answer'])
         self.speech_to_text = json.dumps(model_config['speech_to_text']) \
@@ -365,7 +369,7 @@ class Conversation(db.Model):
             model_config['pre_prompt'] = app_model_config.pre_prompt
             model_config['agent_mode'] = app_model_config.agent_mode_dict
             model_config['opening_statement'] = app_model_config.opening_statement
-            model_config['opening_suggestions'] = app_model_config.opening_suggestions
+            model_config['opening_suggestions'] = app_model_config.opening_suggestions_list
             model_config['suggested_questions'] = app_model_config.suggested_questions_list
             model_config['suggested_questions_after_answer'] = app_model_config.suggested_questions_after_answer_dict
             model_config['speech_to_text'] = app_model_config.speech_to_text_dict

@@ -28,6 +28,7 @@ class UniversalChatParameterApi(UniversalChatResource):
 
         return {
             'opening_statement': app_model_config.opening_statement,
+            'opening_suggestions': app_model_config.opening_suggestions_list,
             'suggested_questions': app_model_config.suggested_questions_list,
             'suggested_questions_after_answer': app_model_config.suggested_questions_after_answer_dict,
             'speech_to_text': app_model_config.speech_to_text_dict,
