@@ -10,10 +10,10 @@ ALLOWED_EXTENSIONS = ['mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm']
 
 class AudioService:
     @classmethod
-    def transcript(cls, tenant_id: str, file: FileStorage):
+    def transcript(cls, tenant_id: str, file: FileStorage, language: str = 'zh'):
         if file is None:
             raise NoAudioUploadedServiceError()
-        
+
         extension = file.mimetype
         if extension not in [f'audio/{ext}' for ext in ALLOWED_EXTENSIONS]:
             raise UnsupportedAudioTypeServiceError()
@@ -26,10 +26,10 @@ class AudioService:
             raise AudioTooLargeServiceError(message)
 
         model = ModelFactory.get_speech2text_model(
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
         )
 
         buffer = io.BytesIO(file_content)
         buffer.name = 'temp.mp3'
 
-        return model.run(buffer)
+        return model.run(buffer, language)

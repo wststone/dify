@@ -2,7 +2,7 @@ version: '3.1'
 services:
   # API service
   api:
-    image: langgenius/dify-api:0.3.27
+    build: ../api
     restart: always
     environment:
       # Startup mode, 'api' starts the API server.

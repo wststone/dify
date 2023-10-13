@@ -24,11 +24,13 @@ class AudioApi(AppApiResource):
             raise AppUnavailableError() 
 
         file = request.files['file']
+        language = request.form.get('language')
 
         try:
             response = AudioService.transcript(
                 tenant_id=app_model.tenant_id,
                 file=file,
+                language=language
             )
 
             return response

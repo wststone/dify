@@ -53,6 +53,7 @@ feedback_stat_fields = {
 
 model_config_fields = {
     'opening_statement': fields.String,
+    'opening_suggestions': fields.String,
     'suggested_questions': fields.Raw,
     'model': fields.Raw,
     'user_input_form': fields.Raw,

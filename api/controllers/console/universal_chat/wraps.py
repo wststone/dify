@@ -44,6 +44,7 @@ def universal_chat_app_required(view=None):
                     model_id="",
                     configs={},
                     opening_statement='',
+                    opening_suggestions=json.dumps([]),
                     suggested_questions=json.dumps([]),
                     suggested_questions_after_answer=json.dumps({'enabled': True}),
                     speech_to_text=json.dumps({'enabled': True}),

@@ -82,6 +82,7 @@ class AppModelConfig(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
     opening_statement = db.Column(db.Text)
+    opening_suggestions = db.Column(db.Text)
     suggested_questions = db.Column(db.Text)
     suggested_questions_after_answer = db.Column(db.Text)
     speech_to_text = db.Column(db.Text)
@@ -161,6 +162,7 @@ class AppModelConfig(db.Model):
             "model_id": "",
             "configs": {},
             "opening_statement": self.opening_statement,
+            "opening_suggestions": self.opening_suggestions,
             "suggested_questions": self.suggested_questions_list,
             "suggested_questions_after_answer": self.suggested_questions_after_answer_dict,
             "speech_to_text": self.speech_to_text_dict,
@@ -183,6 +185,7 @@ class AppModelConfig(db.Model):
         self.model_id = ""
         self.configs = {}
         self.opening_statement = model_config['opening_statement']
+        self.opening_suggestions = model_config['opening_suggestions']
         self.suggested_questions = json.dumps(model_config['suggested_questions'])
         self.suggested_questions_after_answer = json.dumps(model_config['suggested_questions_after_answer'])
         self.speech_to_text = json.dumps(model_config['speech_to_text']) \
@@ -214,6 +217,7 @@ class AppModelConfig(db.Model):
             model_id="",
             configs={},
             opening_statement=self.opening_statement,
+            opening_suggestions =self.opening_suggestions,
             suggested_questions=self.suggested_questions,
             suggested_questions_after_answer=self.suggested_questions_after_answer,
             speech_to_text=self.speech_to_text,
@@ -336,6 +340,7 @@ class Conversation(db.Model):
                 model_config['pre_prompt'] = override_model_configs['pre_prompt']
                 model_config['agent_mode'] = override_model_configs['agent_mode']
                 model_config['opening_statement'] = override_model_configs['opening_statement']
+                model_config['opening_suggestions'] = override_model_configs['opening_suggestions']
                 model_config['suggested_questions'] = override_model_configs['suggested_questions']
                 model_config['suggested_questions_after_answer'] = override_model_configs[
                     'suggested_questions_after_answer'] \
@@ -360,6 +365,7 @@ class Conversation(db.Model):
             model_config['pre_prompt'] = app_model_config.pre_prompt
             model_config['agent_mode'] = app_model_config.agent_mode_dict
             model_config['opening_statement'] = app_model_config.opening_statement
+            model_config['opening_suggestions'] = app_model_config.opening_suggestions
             model_config['suggested_questions'] = app_model_config.suggested_questions_list
             model_config['suggested_questions_after_answer'] = app_model_config.suggested_questions_after_answer_dict
             model_config['speech_to_text'] = app_model_config.speech_to_text_dict
