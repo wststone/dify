@@ -21,7 +21,6 @@ import {
   EditIconSolid,
   OpeningStatementIcon,
   RatingIcon,
-  LightBulbIcon,
 } from "../icon-component";
 import s from "../style.module.css";
 import MoreInfo from "../more-info";
@@ -94,7 +93,7 @@ const Answer: FC<IAnswerProps> = ({
   isShowCitation,
   isShowCitationHitInfo = false,
 }) => {
-  console.log(item)
+  console.log(item);
   const {
     id,
     content,
@@ -311,14 +310,6 @@ const Answer: FC<IAnswerProps> = ({
                 {item.isOpeningStatement && (
                   <div className="flex items-center mb-1 gap-1">
                     <OpeningStatementIcon />
-                    <div className="text-xs text-gray-500">
-                      {t("appDebug.openingStatement.title")}
-                    </div>
-                  </div>
-                )}
-                {item.isOpeningStatement && (
-                  <div className="flex items-center mb-1 gap-1">
-                    <LightBulbIcon />
                     <div className="text-xs text-gray-500">
                       {t("appDebug.openingStatement.title")}
                     </div>

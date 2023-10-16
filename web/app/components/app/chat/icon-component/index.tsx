@@ -2,7 +2,6 @@ import type { FC, SVGProps } from "react";
 import {
   HandThumbDownIcon,
   HandThumbUpIcon,
-  LightBulbIcon,
 } from "@heroicons/react/24/outline";
 
 export const stopIcon = (
@@ -108,5 +107,3 @@ export const TryToAskIcon = (
     />
   </svg>
 );
-
-export { LightBulbIcon };
