@@ -125,6 +125,7 @@ const Config: FC = () => {
     isChatApp &&
     (featureConfig.openingStatement ||
       featureConfig.suggestedQuestionsAfterAnswer ||
+      featureConfig.openingSuggestions ||
       (featureConfig.speechToText && !!speech2textDefaultModel) ||
       featureConfig.citation);
   const hasToolbox = false;
