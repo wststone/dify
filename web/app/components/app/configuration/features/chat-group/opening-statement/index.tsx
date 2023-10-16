@@ -142,7 +142,7 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
                   value={tempValue}
                   rows={3}
                   onChange={e => setTempValue(e.target.value)}
-                  className="w-full px-0 text-sm  border-0 bg-transparent  focus:outline-none "
+                  className="w-full px-0 text-sm border-0 bg-transparent focus:outline-none"
                   placeholder={t('appDebug.openingStatement.placeholder') as string}
                 >
                 </textarea>

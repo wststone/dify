@@ -51,6 +51,10 @@ const translation = {
       title: 'Conversation remakers',
       description: 'In a chat app, the first sentence that the AI actively speaks to the user is usually used as a welcome.',
     },
+    openingSuggestions: {
+      title: 'Conversation suggestions',
+      description: 'Set up introductory questions that can inspire users and send them directly.',
+    },
     suggestedQuestionsAfterAnswer: {
       title: 'Follow-up',
       description: 'Setting up next questions suggestion can give users a better chat.',

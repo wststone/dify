@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 
 function useFeature({
   introduction,
   setIntroduction,
+  openingSuggestions,
+  setOpeningSuggestions,
   moreLikeThis,
   setMoreLikeThis,
   suggestedQuestionsAfterAnswer,
@@ -12,23 +14,29 @@ function useFeature({
   citation,
   setCitation,
 }: {
-  introduction: string
-  setIntroduction: (introduction: string) => void
-  moreLikeThis: boolean
-  setMoreLikeThis: (moreLikeThis: boolean) => void
-  suggestedQuestionsAfterAnswer: boolean
-  setSuggestedQuestionsAfterAnswer: (suggestedQuestionsAfterAnswer: boolean) => void
-  speechToText: boolean
-  setSpeechToText: (speechToText: boolean) => void
-  citation: boolean
-  setCitation: (citation: boolean) => void
+  introduction: string;
+  setIntroduction: (introduction: string) => void;
+  openingSuggestions: string[];
+  setOpeningSuggestions: (openingSuggestions: string[]) => void;
+  moreLikeThis: boolean;
+  setMoreLikeThis: (moreLikeThis: boolean) => void;
+  suggestedQuestionsAfterAnswer: boolean;
+  setSuggestedQuestionsAfterAnswer: (
+    suggestedQuestionsAfterAnswer: boolean
+  ) => void;
+  speechToText: boolean;
+  setSpeechToText: (speechToText: boolean) => void;
+  citation: boolean;
+  setCitation: (citation: boolean) => void;
 }) {
-  const [tempshowOpeningStatement, setTempShowOpeningStatement] = React.useState(!!introduction)
+  const [tempshowOpeningStatement, setTempShowOpeningStatement] =
+    React.useState(!!introduction);
+  const [tempshowOpeningSuggestions, setTempShowOpeningSuggestions] =
+    React.useState(!!openingSuggestions?.length);
   useEffect(() => {
     // wait to api data back
-    if (introduction)
-      setTempShowOpeningStatement(true)
-  }, [introduction])
+    if (introduction) setTempShowOpeningStatement(true);
+  }, [introduction]);
 
   // const [tempMoreLikeThis, setTempMoreLikeThis] = React.useState(moreLikeThis)
   // useEffect(() => {
@@ -37,36 +45,42 @@ function useFeature({
 
   const featureConfig = {
     openingStatement: tempshowOpeningStatement,
+    openingSuggestions: tempshowOpeningSuggestions,
     moreLikeThis,
     suggestedQuestionsAfterAnswer,
     speechToText,
     citation,
-  }
+  };
   const handleFeatureChange = (key: string, value: boolean) => {
     switch (key) {
-      case 'openingStatement':
-        if (!value)
-          setIntroduction('')
+      case "openingStatement": {
+        if (!value) setIntroduction("");
 
-        setTempShowOpeningStatement(value)
-        break
-      case 'moreLikeThis':
-        setMoreLikeThis(value)
-        break
-      case 'suggestedQuestionsAfterAnswer':
-        setSuggestedQuestionsAfterAnswer(value)
-        break
-      case 'speechToText':
-        setSpeechToText(value)
-        break
-      case 'citation':
-        setCitation(value)
+        setTempShowOpeningStatement(value);
+        break;
+      }
+      case "openingSuggestions": {
+        // setOpeningSuggestions(value);
+        setTempShowOpeningSuggestions(value)
+        break;
+      }
+      case "moreLikeThis":
+        setMoreLikeThis(value);
+        break;
+      case "suggestedQuestionsAfterAnswer":
+        setSuggestedQuestionsAfterAnswer(value);
+        break;
+      case "speechToText":
+        setSpeechToText(value);
+        break;
+      case "citation":
+        setCitation(value);
     }
-  }
+  };
   return {
     featureConfig,
     handleFeatureChange,
-  }
+  };
 }
 
-export default useFeature
+export default useFeature;

@@ -50,6 +50,11 @@ const translation = {
     conversationOpener: {
       title: '对话开场白',
       description: '在对话型应用中，让 AI 主动说第一段话可以拉近与用户间的距离。',
+      placeholder: "请输入"
+    },
+    openingSuggestions: {
+      title: '开场建议',
+      description: '设置开场问题建议可以给用户灵感，并直接发送。',
     },
     suggestedQuestionsAfterAnswer: {
       title: '下一步问题建议',

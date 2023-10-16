@@ -21,6 +21,7 @@ class AppParameterApi(InstalledAppResource):
 
     parameters_fields = {
         'opening_statement': fields.String,
+        'opening_suggestions': fields.Raw,
         'suggested_questions': fields.Raw,
         'suggested_questions_after_answer': fields.Raw,
         'speech_to_text': fields.Raw,

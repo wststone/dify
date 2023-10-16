@@ -8,7 +8,6 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierHeathLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import cn from "classnames";
 import CopyBtn from "@/app/components/app/chat/copy-btn";
 import SVGBtn from "@/app/components/app/chat/svg";
@@ -90,12 +89,10 @@ export function Markdown(props: { content: string }) {
         rehypePlugins={[RehypeKatex]}
         components={{
           img: (props) => (
-            // @ts-expect-error src exists
-            <Image
+            <img
               {...props}
-              width={300}
-              height={300}
               alt={props.alt || "图片"}
+              className="max-w-[20rem] max-h-[20rem] object-cover"
             />
           ),
           code({ node, inline, className, children, ...props }) {

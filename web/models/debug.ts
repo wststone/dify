@@ -82,6 +82,7 @@ export type ModelConfig = {
   mode: ModelModeType
   configs: PromptConfig
   opening_statement: string | null
+  opening_suggestions: string[]
   more_like_this: MoreLikeThisConfig | null
   suggested_questions_after_answer: SuggestedQuestionsAfterAnswerConfig | null
   speech_to_text: SpeechToTextConfig | null

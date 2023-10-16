@@ -95,6 +95,7 @@ export type ToolItem = {
  */
 export type ModelConfig = {
   opening_statement: string
+  opening_suggestions?: string[]
   pre_prompt: string
   prompt_type: PromptMode
   chat_prompt_config: ChatPromptConfig | {}
