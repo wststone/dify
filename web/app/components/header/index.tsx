@@ -6,11 +6,10 @@ import AppNav from './app-nav'
 import DatasetNav from './dataset-nav'
 import EnvNav from './env-nav'
 import ExploreNav from './explore-nav'
-import GithubStar from './github-star'
 import PluginNav from './plugin-nav'
-import s from './index.module.css'
 import { WorkspaceProvider } from '@/context/workspace-context'
 import { useAppContext } from '@/context/app-context'
+import LogoSite from '@/app/components/base/logo/logo-site'
 
 const navClassName = `
   flex items-center relative mr-3 px-3 h-8 rounded-xl
@@ -20,14 +19,13 @@ const navClassName = `
 
 const Header = () => {
   const { isCurrentWorkspaceManager } = useAppContext()
+  
   return (
     <>
       <div className='flex items-center'>
         <Link href="/apps" className='flex items-center mr-4'>
-          <div className={s.logo} />
+          <LogoSite />
         </Link>
-        {/* @ts-expect-error Async Server Component */}
-        <GithubStar />
       </div>
       <div className='flex items-center'>
         <ExploreNav className={navClassName} />

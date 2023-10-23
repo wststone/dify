@@ -431,13 +431,13 @@ const Configuration: FC = () => {
           dataSets: datasets || [],
         },
         completionParams: model.completion_params,
-      };
-      syncToPublishedConfig(config);
-      setPublishedConfig(config);
-
-      setHasFetchedDetail(true);
-    });
-  }, [appId]);
+      }
+      syncToPublishedConfig(config)
+      setPublishedConfig(config)
+      setDatasetConfigs(modelConfig.dataset_configs)
+      setHasFetchedDetail(true)
+    })
+  }, [appId])
 
   const promptEmpty = (() => {
     if (mode === AppType.chat) return false;

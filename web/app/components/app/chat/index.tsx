@@ -1,5 +1,5 @@
 "use client";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useContext } from "use-context-selector";
 import cn from "classnames";
@@ -56,7 +56,7 @@ export type IChatProps = {
   suggestionList?: string[];
   isShowSpeechToText?: boolean;
   isShowCitation?: boolean;
-  answerIconClassName?: string;
+  answerIcon?: ReactNode;
   isShowConfigElem?: boolean;
   dataSets?: DataSet[];
   isShowCitationHitInfo?: boolean;
@@ -86,7 +86,7 @@ const Chat: FC<IChatProps> = ({
   suggestionList,
   isShowSpeechToText,
   isShowCitation,
-  answerIconClassName,
+  answerIcon,
   isShowConfigElem,
   dataSets,
   isShowCitationHitInfo,
@@ -173,7 +173,7 @@ const Chat: FC<IChatProps> = ({
       }
     );
   };
-  
+
   return (
     <div className={cn("px-3.5", "h-full")}>
       {isShowConfigElem && (configElem || null)}
@@ -219,7 +219,7 @@ const Chat: FC<IChatProps> = ({
                 onSubmitAnnotation={onSubmitAnnotation}
                 displayScene={displayScene ?? "web"}
                 isResponsing={isResponsing && isLast}
-                answerIconClassName={answerIconClassName}
+                answerIcon={answerIcon}
                 thoughts={thoughts}
                 citation={citation}
                 isThinking={isThinking}
