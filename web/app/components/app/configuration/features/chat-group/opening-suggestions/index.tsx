@@ -61,7 +61,7 @@ const OpeningSuggestions = ({
           {openingSuggestions.map((suggestion) => (
             <span
               key={suggestion}
-              className="inline-flex gap-1 text-sm px-1.5 py-0.5 rounded-md items-center text-blue-400 bg-blue-100 border-blue-50"
+              className="inline-flex gap-1 text-sm px-1.5 py-0.5 rounded-md items-center text-blue-400 bg-blue-100 border border-blue-50"
             >
               {suggestion}
               <button

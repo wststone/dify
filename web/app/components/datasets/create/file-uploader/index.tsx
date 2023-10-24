@@ -149,10 +149,6 @@ const FileUploader = ({
   const initialUpload = useCallback((files: File[]) => {
     if (!files.length)
       return false
-    if (files.length > countLimit - countUsed) {
-      notify({ type: 'error', message: t('datasetCreation.stepOne.overCountLimit', { countLimit }) })
-      return false
-    }
     const preparedFiles = files.map((file, index) => ({
       fileID: `file${index}-${Date.now()}`,
       file,
@@ -209,15 +205,19 @@ const FileUploader = ({
   }, [isValid, initialUpload])
 
   useEffect(() => {
-    dropRef.current?.addEventListener('dragenter', handleDragEnter)
-    dropRef.current?.addEventListener('dragover', handleDragOver)
-    dropRef.current?.addEventListener('dragleave', handleDragLeave)
-    dropRef.current?.addEventListener('drop', handleDrop)
-    return () => {
-      dropRef.current?.removeEventListener('dragenter', handleDragEnter)
-      dropRef.current?.removeEventListener('dragover', handleDragOver)
-      dropRef.current?.removeEventListener('dragleave', handleDragLeave)
-      dropRef.current?.removeEventListener('drop', handleDrop)
+    const drop = dropRef.current
+    if (drop) {
+      drop.addEventListener('dragenter', handleDragEnter)
+      drop.addEventListener('dragover', handleDragOver)
+      drop.addEventListener('dragleave', handleDragLeave)
+      drop.addEventListener('drop', handleDrop)
+      
+      return () => {
+        drop.removeEventListener('dragenter', handleDragEnter)
+        drop.removeEventListener('dragover', handleDragOver)
+        drop.removeEventListener('dragleave', handleDragLeave)
+        drop.removeEventListener('drop', handleDrop)
+      }
     }
   }, [handleDrop])
 
