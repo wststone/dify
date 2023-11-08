@@ -1,27 +1,40 @@
-'use client'
-import type { FC, ReactNode } from 'react'
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useContext } from 'use-context-selector'
-import { UserCircleIcon } from '@heroicons/react/24/solid'
-import cn from 'classnames'
-import type { CitationItem, DisplayScene, FeedbackFunc, Feedbacktype, IChatItem, SubmitAnnotationFunc, ThoughtItem } from '../type'
-import OperationBtn from '../operation'
-import LoadingAnim from '../loading-anim'
-import { EditIcon, EditIconSolid, OpeningStatementIcon, RatingIcon } from '../icon-component'
-import s from '../style.module.css'
-import MoreInfo from '../more-info'
-import CopyBtn from '../copy-btn'
-import Thought from '../thought'
-import Citation from '../citation'
-import { randomString } from '@/utils'
-import type { Annotation, MessageRating } from '@/models/log'
-import AppContext from '@/context/app-context'
-import Tooltip from '@/app/components/base/tooltip'
-import { Markdown } from '@/app/components/base/markdown'
-import AutoHeightTextarea from '@/app/components/base/auto-height-textarea'
-import Button from '@/app/components/base/button'
-import type { DataSet } from '@/models/datasets'
+"use client";
+import type { FC, ReactNode } from "react";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useContext } from "use-context-selector";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
+import cn from "classnames";
+import type {
+  CitationItem,
+  DisplayScene,
+  FeedbackFunc,
+  Feedbacktype,
+  IChatItem,
+  SubmitAnnotationFunc,
+  ThoughtItem,
+} from "../type";
+import OperationBtn from "../operation";
+import LoadingAnim from "../loading-anim";
+import {
+  EditIcon,
+  EditIconSolid,
+  OpeningStatementIcon,
+  RatingIcon,
+} from "../icon-component";
+import s from "../style.module.css";
+import MoreInfo from "../more-info";
+import CopyBtn from "../copy-btn";
+import Thought from "../thought";
+import Citation from "../citation";
+import { randomString } from "@/utils";
+import type { Annotation, MessageRating } from "@/models/log";
+import AppContext from "@/context/app-context";
+import Tooltip from "@/app/components/base/tooltip";
+import { Markdown } from "@/app/components/base/markdown";
+import AutoHeightTextarea from "@/app/components/base/auto-height-textarea";
+import Button from "@/app/components/base/button";
+import type { DataSet } from "@/models/datasets";
 
 const Divider: FC<{ name: string }> = ({ name }) => {
   const { t } = useTranslation();
@@ -71,7 +84,7 @@ const Answer: FC<IAnswerProps> = ({
   isHideFeedbackEdit = false,
   onFeedback,
   onSubmitAnnotation,
-  displayScene = 'web',
+  displayScene = "web",
   isResponsing,
   answerIcon,
   thoughts,
@@ -81,14 +94,27 @@ const Answer: FC<IAnswerProps> = ({
   isShowCitation,
   isShowCitationHitInfo = false,
 }) => {
-  const { id, content, more, feedback, adminFeedback, annotation: initAnnotation } = item
-  const [showEdit, setShowEdit] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [annotation, setAnnotation] = useState<Annotation | undefined | null>(initAnnotation)
-  const [inputValue, setInputValue] = useState<string>(initAnnotation?.content ?? '')
-  const [localAdminFeedback, setLocalAdminFeedback] = useState<Feedbacktype | undefined | null>(adminFeedback)
-  const { userProfile } = useContext(AppContext)
-  const { t } = useTranslation()
+  const {
+    id,
+    content,
+    more,
+    feedback,
+    adminFeedback,
+    annotation: initAnnotation,
+  } = item;
+  const [showEdit, setShowEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [annotation, setAnnotation] = useState<Annotation | undefined | null>(
+    initAnnotation
+  );
+  const [inputValue, setInputValue] = useState<string>(
+    initAnnotation?.content ?? ""
+  );
+  const [localAdminFeedback, setLocalAdminFeedback] = useState<
+    Feedbacktype | undefined | null
+  >(adminFeedback);
+  const { userProfile } = useContext(AppContext);
+  const { t } = useTranslation();
   /**
    * Render feedback results (distinguish between users and administrators)
    * User reviews cannot be cancelled in Console
