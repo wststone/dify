@@ -13,11 +13,11 @@ function useFeature({
   setSpeechToText,
   citation,
   setCitation,
+  moderation,
+  setModeration,
 }: {
   introduction: string;
   setIntroduction: (introduction: string) => void;
-  openingSuggestions: string[];
-  setOpeningSuggestions: (openingSuggestions: string[]) => void;
   moreLikeThis: boolean;
   setMoreLikeThis: (moreLikeThis: boolean) => void;
   suggestedQuestionsAfterAnswer: boolean;
@@ -28,6 +28,8 @@ function useFeature({
   setSpeechToText: (speechToText: boolean) => void;
   citation: boolean;
   setCitation: (citation: boolean) => void;
+  moderation: boolean;
+  setModeration: (moderation: boolean) => void;
 }) {
   const [tempshowOpeningStatement, setTempShowOpeningStatement] =
     React.useState(!!introduction);
@@ -50,6 +52,7 @@ function useFeature({
     suggestedQuestionsAfterAnswer,
     speechToText,
     citation,
+    moderation,
   };
   const handleFeatureChange = (key: string, value: boolean) => {
     switch (key) {
@@ -61,7 +64,7 @@ function useFeature({
       }
       case "openingSuggestions": {
         // setOpeningSuggestions(value);
-        setTempShowOpeningSuggestions(value)
+        setTempShowOpeningSuggestions(value);
         break;
       }
       case "moreLikeThis":

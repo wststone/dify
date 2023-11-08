@@ -400,6 +400,8 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
             app_id: installedAppInfo?.id,
             site: {
               title: installedAppInfo?.app.name,
+              icon: installedAppInfo?.app.icon,
+              icon_background: installedAppInfo?.app.icon_background,
               prompt_public: false,
               copyright: "",
             },
@@ -417,7 +419,7 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
       try {
         const [appData, conversationData, appParams]: any =
           await fetchInitData();
-          console.log({appData, conversationData, appParams})
+        console.log({ appData, conversationData, appParams });
         const { app_id: appId, site: siteInfo, plan }: any = appData;
         setAppId(appId);
         setPlan(plan);
@@ -437,11 +439,12 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
         // fetch new conversation info
         const {
           user_input_form,
-          opening_statement: introduction,
           opening_suggestions,
+          opening_statement: introduction,
           suggested_questions_after_answer,
           speech_to_text,
           retriever_resource,
+          sensitive_word_avoidance,
         }: any = appParams;
         const prompt_variables =
           userInputsFormToPromptVariables(user_input_form);
@@ -674,6 +677,21 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
               setChatList(newListWithAnswer);
             }
           : undefined,
+        onMessageReplace: (messageReplace) => {
+          if (isInstalledApp) {
+            responseItem.content = messageReplace.answer;
+          } else {
+            setChatList(
+              produce(getChatList(), (draft) => {
+                const current = draft.find(
+                  (item) => item.id === messageReplace.id
+                );
+
+                if (current) current.content = messageReplace.answer;
+              })
+            );
+          }
+        },
         onError() {
           setResponsingFalse();
           // role back placeholder answer
@@ -758,7 +776,7 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
       </div>
     );
   }
-  
+
   return (
     <div className="bg-gray-100">
       {!isInstalledApp && (

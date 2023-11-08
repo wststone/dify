@@ -1,53 +1,49 @@
-"use client";
-import type { FC } from "react";
-import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useContext } from "use-context-selector";
-import { usePathname } from "next/navigation";
-import produce from "immer";
-import { useBoolean, useGetState } from "ahooks";
-import cn from "classnames";
-import { clone, isEqual } from "lodash-es";
-import Button from "../../base/button";
-import Loading from "../../base/loading";
-import s from "./style.module.css";
-import useAdvancedPromptConfig from "./hooks/use-advanced-prompt-config";
-import EditHistoryModal from "./config-prompt/conversation-histroy/edit-modal";
+'use client'
+import type { FC } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useContext } from 'use-context-selector'
+import { usePathname } from 'next/navigation'
+import produce from 'immer'
+import { useBoolean, useGetState } from 'ahooks'
+import cn from 'classnames'
+import { clone, isEqual } from 'lodash-es'
+import Button from '../../base/button'
+import Loading from '../../base/loading'
+import s from './style.module.css'
+import useAdvancedPromptConfig from './hooks/use-advanced-prompt-config'
+import EditHistoryModal from './config-prompt/conversation-histroy/edit-modal'
 import type {
   CompletionParams,
   DatasetConfigs,
   Inputs,
   ModelConfig,
+  ModerationConfig,
   MoreLikeThisConfig,
   PromptConfig,
   PromptVariable,
-} from "@/models/debug";
-import type { DataSet } from "@/models/datasets";
-import type { ModelConfig as BackendModelConfig } from "@/types/app";
-import ConfigContext from "@/context/debug-configuration";
-import ConfigModel from "@/app/components/app/configuration/config-model";
-import Config from "@/app/components/app/configuration/config";
-import Debug from "@/app/components/app/configuration/debug";
-import Confirm from "@/app/components/base/confirm";
-import { ProviderEnum } from "@/app/components/header/account-setting/model-page/declarations";
-import { ToastContext } from "@/app/components/base/toast";
-import { fetchAppDetail, updateAppModelConfig } from "@/service/apps";
-import {
-  promptVariablesToUserInputsForm,
-  userInputsFormToPromptVariables,
-} from "@/utils/model-config";
-import { fetchDatasets } from "@/service/datasets";
-import AccountSetting from "@/app/components/header/account-setting";
-import { useProviderContext } from "@/context/provider-context";
-import { AppType, ModelModeType } from "@/types/app";
-import { FlipBackward } from "@/app/components/base/icons/src/vender/line/arrows";
-import { PromptMode } from "@/models/debug";
-import {
-  DEFAULT_CHAT_PROMPT_CONFIG,
-  DEFAULT_COMPLETION_PROMPT_CONFIG,
-} from "@/config";
-import SelectDataSet from "@/app/components/app/configuration/dataset-config/select-dataset";
-import I18n from "@/context/i18n";
+} from '@/models/debug'
+import type { ExternalDataTool } from '@/models/common'
+import type { DataSet } from '@/models/datasets'
+import type { ModelConfig as BackendModelConfig } from '@/types/app'
+import ConfigContext from '@/context/debug-configuration'
+import ConfigModel from '@/app/components/app/configuration/config-model'
+import Config from '@/app/components/app/configuration/config'
+import Debug from '@/app/components/app/configuration/debug'
+import Confirm from '@/app/components/base/confirm'
+import { ProviderEnum } from '@/app/components/header/account-setting/model-page/declarations'
+import { ToastContext } from '@/app/components/base/toast'
+import { fetchAppDetail, updateAppModelConfig } from '@/service/apps'
+import { promptVariablesToUserInputsForm, userInputsFormToPromptVariables } from '@/utils/model-config'
+import { fetchDatasets } from '@/service/datasets'
+import { useProviderContext } from '@/context/provider-context'
+import { AppType, ModelModeType } from '@/types/app'
+import { FlipBackward } from '@/app/components/base/icons/src/vender/line/arrows'
+import { PromptMode } from '@/models/debug'
+import { DEFAULT_CHAT_PROMPT_CONFIG, DEFAULT_COMPLETION_PROMPT_CONFIG } from '@/config'
+import SelectDataSet from '@/app/components/app/configuration/dataset-config/select-dataset'
+import I18n from '@/context/i18n'
+import { useModalContext } from '@/context/modal-context'
 
 type PublichConfig = {
   modelConfig: ModelConfig;
@@ -55,18 +51,16 @@ type PublichConfig = {
 };
 
 const Configuration: FC = () => {
-  const { t } = useTranslation();
-  const { notify } = useContext(ToastContext);
-
-  const [hasFetchedDetail, setHasFetchedDetail] = useState(false);
-  const isLoading = !hasFetchedDetail;
-  const pathname = usePathname();
-  const matched = pathname.match(/\/app\/([^/]+)/);
-  const appId = matched?.length && matched[1] ? matched[1] : "";
-  const [mode, setMode] = useState("");
-  const [publishedConfig, setPublishedConfig] = useState<PublichConfig | null>(
-    null
-  );
+  const { t } = useTranslation()
+  const { notify } = useContext(ToastContext)
+  const { setShowAccountSettingModal } = useModalContext()
+  const [hasFetchedDetail, setHasFetchedDetail] = useState(false)
+  const isLoading = !hasFetchedDetail
+  const pathname = usePathname()
+  const matched = pathname.match(/\/app\/([^/]+)/)
+  const appId = (matched?.length && matched[1]) ? matched[1] : ''
+  const [mode, setMode] = useState('')
+  const [publishedConfig, setPublishedConfig] = useState<PublichConfig | null>(null)
 
   const [conversationId, setConversationId] = useState<string | null>("");
 
@@ -93,10 +87,14 @@ const Configuration: FC = () => {
     });
   const [citationConfig, setCitationConfig] = useState<MoreLikeThisConfig>({
     enabled: false,
-  });
-  const [formattingChanged, setFormattingChanged] = useState(false);
-  const [inputs, setInputs] = useState<Inputs>({});
-  const [query, setQuery] = useState("");
+  })
+  const [moderationConfig, setModerationConfig] = useState<ModerationConfig>({
+    enabled: false,
+  })
+  const [externalDataToolsConfig, setExternalDataToolsConfig] = useState<ExternalDataTool[]>([])
+  const [formattingChanged, setFormattingChanged] = useState(false)
+  const [inputs, setInputs] = useState<Inputs>({})
+  const [query, setQuery] = useState('')
   const [completionParams, doSetCompletionParams] = useState<CompletionParams>({
     max_tokens: 16,
     temperature: 1, // 0-2
@@ -134,6 +132,7 @@ const Configuration: FC = () => {
     suggested_questions_after_answer: null,
     speech_to_text: null,
     retriever_resource: null,
+    sensitive_word_avoidance: null,
     dataSets: [],
   });
 
@@ -267,11 +266,9 @@ const Configuration: FC = () => {
 
   const hasSetAPIKEY = hasSetCustomAPIKEY || !isTrailFinished;
 
-  const [isShowSetAPIKey, { setTrue: showSetAPIKey, setFalse: hideSetAPIkey }] =
-    useBoolean();
-  const [promptMode, doSetPromptMode] = useState(PromptMode.simple);
-  const isAdvancedMode = promptMode === PromptMode.advanced;
-  const [canReturnToSimpleMode, setCanReturnToSimpleMode] = useState(true);
+  const [promptMode, doSetPromptMode] = useState(PromptMode.simple)
+  const isAdvancedMode = promptMode === PromptMode.advanced
+  const [canReturnToSimpleMode, setCanReturnToSimpleMode] = useState(true)
   const setPromptMode = async (mode: PromptMode) => {
     if (mode === PromptMode.advanced) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -409,6 +406,18 @@ const Configuration: FC = () => {
       if (modelConfig.retriever_resource)
         setCitationConfig(modelConfig.retriever_resource);
 
+      if (modelConfig.sensitive_word_avoidance)
+        setModerationConfig(modelConfig.sensitive_word_avoidance)
+
+      if (modelConfig.external_data_tools)
+        setExternalDataToolsConfig(modelConfig.external_data_tools)
+
+      if (modelConfig.sensitive_word_avoidance)
+        setModerationConfig(modelConfig.sensitive_word_avoidance)
+
+      if (modelConfig.external_data_tools)
+        setExternalDataToolsConfig(modelConfig.external_data_tools)
+
       const config = {
         modelConfig: {
           provider: model.provider,
@@ -428,6 +437,8 @@ const Configuration: FC = () => {
             modelConfig.suggested_questions_after_answer,
           speech_to_text: modelConfig.speech_to_text,
           retriever_resource: modelConfig.retriever_resource,
+          sensitive_word_avoidance: modelConfig.sensitive_word_avoidance,
+          external_data_tools: modelConfig.external_data_tools,
           dataSets: datasets || [],
         },
         completionParams: model.completion_params,
@@ -530,6 +541,8 @@ const Configuration: FC = () => {
       suggested_questions_after_answer: suggestedQuestionsAfterAnswerConfig,
       speech_to_text: speechToTextConfig,
       retriever_resource: citationConfig,
+      sensitive_word_avoidance: moderationConfig,
+      external_data_tools: externalDataToolsConfig,
       agent_mode: {
         enabled: true,
         tools: [...postDatasets],
@@ -582,9 +595,8 @@ const Configuration: FC = () => {
     setShowConfirm(false);
   };
 
-  const [showUseGPT4Confirm, setShowUseGPT4Confirm] = useState(false);
-  const [showSetAPIKeyModal, setShowSetAPIKeyModal] = useState(false);
-  const { locale } = useContext(I18n);
+  const [showUseGPT4Confirm, setShowUseGPT4Confirm] = useState(false)
+  const { locale } = useContext(I18n)
 
   if (isLoading) {
     return (
@@ -595,62 +607,62 @@ const Configuration: FC = () => {
   }
 
   return (
-    <ConfigContext.Provider
-      value={{
-        appId,
-        hasSetAPIKEY,
-        isTrailFinished,
-        mode,
-        modelModeType,
-        promptMode,
-        isAdvancedMode,
-        setPromptMode,
-        canReturnToSimpleMode,
-        setCanReturnToSimpleMode,
-        chatPromptConfig,
-        completionPromptConfig,
-        currentAdvancedPrompt,
-        setCurrentAdvancedPrompt,
-        conversationHistoriesRole:
-          completionPromptConfig.conversation_histories_role,
-        showHistoryModal,
-        setConversationHistoriesRole,
-        hasSetBlockStatus,
-        conversationId,
-        introduction,
-        setIntroduction,
-        openingSuggestions,
-        setOpeningSuggestions,
-        setConversationId,
-        controlClearChatMessage,
-        setControlClearChatMessage,
-        prevPromptConfig,
-        setPrevPromptConfig,
-        moreLikeThisConfig,
-        setMoreLikeThisConfig,
-        suggestedQuestionsAfterAnswerConfig,
-        setSuggestedQuestionsAfterAnswerConfig,
-        speechToTextConfig,
-        setSpeechToTextConfig,
-        citationConfig,
-        setCitationConfig,
-        formattingChanged,
-        setFormattingChanged,
-        inputs,
-        setInputs,
-        query,
-        setQuery,
-        completionParams,
-        setCompletionParams,
-        modelConfig,
-        setModelConfig,
-        showSelectDataSet,
-        dataSets,
-        setDataSets,
-        datasetConfigs,
-        setDatasetConfigs,
-        hasSetContextVar,
-      }}
+    <ConfigContext.Provider value={{
+      appId,
+      hasSetAPIKEY,
+      isTrailFinished,
+      mode,
+      modelModeType,
+      promptMode,
+      isAdvancedMode,
+      setPromptMode,
+      canReturnToSimpleMode,
+      setCanReturnToSimpleMode,
+      chatPromptConfig,
+      completionPromptConfig,
+      currentAdvancedPrompt,
+      setCurrentAdvancedPrompt,
+      conversationHistoriesRole: completionPromptConfig.conversation_histories_role,
+      showHistoryModal,
+      setConversationHistoriesRole,
+      hasSetBlockStatus,
+      conversationId,
+      introduction,
+      setIntroduction,
+      setConversationId,
+      controlClearChatMessage,
+      setControlClearChatMessage,
+      prevPromptConfig,
+      setPrevPromptConfig,
+      moreLikeThisConfig,
+      setMoreLikeThisConfig,
+      suggestedQuestionsAfterAnswerConfig,
+      setSuggestedQuestionsAfterAnswerConfig,
+      speechToTextConfig,
+      setSpeechToTextConfig,
+      citationConfig,
+      setCitationConfig,
+      moderationConfig,
+      setModerationConfig,
+      externalDataToolsConfig,
+      setExternalDataToolsConfig,
+      formattingChanged,
+      setFormattingChanged,
+      inputs,
+      setInputs,
+      query,
+      setQuery,
+      completionParams,
+      setCompletionParams,
+      modelConfig,
+      setModelConfig,
+      showSelectDataSet,
+      dataSets,
+      setDataSets,
+      datasetConfigs,
+      setDatasetConfigs,
+      hasSetContextVar,
+    }}
     >
       <>
         <div className="flex flex-col h-full">
@@ -730,11 +742,12 @@ const Configuration: FC = () => {
             <div className="w-1/2 min-w-[560px] shrink-0">
               <Config />
             </div>
-            <div
-              className="relative w-1/2  grow h-full overflow-y-auto  py-4 px-6 bg-gray-50 flex flex-col rounded-tl-2xl border-t border-l"
-              style={{ borderColor: "rgba(0, 0, 0, 0.02)" }}
-            >
-              <Debug hasSetAPIKEY={hasSetAPIKEY} onSetting={showSetAPIKey} />
+            <div className="relative w-1/2  grow h-full overflow-y-auto  py-4 px-6 bg-gray-50 flex flex-col rounded-tl-2xl border-t border-l" style={{ borderColor: 'rgba(0, 0, 0, 0.02)' }}>
+              <Debug
+                hasSetAPIKEY={hasSetAPIKEY}
+                onSetting={() => setShowAccountSettingModal({ payload: 'provider' })}
+                inputs={inputs}
+              />
             </div>
           </div>
         </div>
@@ -755,26 +768,10 @@ const Configuration: FC = () => {
             isShow={showUseGPT4Confirm}
             onClose={() => setShowUseGPT4Confirm(false)}
             onConfirm={() => {
-              setShowSetAPIKeyModal(true);
-              setShowUseGPT4Confirm(false);
+              setShowAccountSettingModal({ payload: 'provider' })
+              setShowUseGPT4Confirm(false)
             }}
             onCancel={() => setShowUseGPT4Confirm(false)}
-          />
-        )}
-        {showSetAPIKeyModal && (
-          <AccountSetting
-            activeTab="provider"
-            onCancel={async () => {
-              setShowSetAPIKeyModal(false);
-            }}
-          />
-        )}
-        {isShowSetAPIKey && (
-          <AccountSetting
-            activeTab="provider"
-            onCancel={async () => {
-              hideSetAPIkey();
-            }}
           />
         )}
 

@@ -32,12 +32,15 @@ import { promptVariablesToUserInputsForm } from "@/utils/model-config";
 import TextGeneration from "@/app/components/app/text-generate/item";
 import { IS_CE_EDITION } from "@/config";
 import { useProviderContext } from "@/context/provider-context";
+import type { Inputs } from "@/models/debug";
+
 type IDebug = {
   hasSetAPIKEY: boolean;
   onSetting: () => void;
+  inputs: Inputs;
 };
 
-const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
+const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting, inputs }) => {
   const { t } = useTranslation();
   const {
     appId,
@@ -53,9 +56,8 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
     suggestedQuestionsAfterAnswerConfig,
     speechToTextConfig,
     citationConfig,
+    moderationConfig,
     moreLikeThisConfig,
-    inputs,
-    // setInputs,
     formattingChanged,
     setFormattingChanged,
     conversationId,
@@ -66,6 +68,7 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
     completionParams,
     hasSetContextVar,
     datasetConfigs,
+    externalDataToolsConfig,
   } = useContext(ConfigContext);
   const { speech2textDefaultModel } = useProviderContext();
   const [chatList, setChatList, getChatList] = useGetState<IChatItem[]>([]);
@@ -238,6 +241,8 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
       suggested_questions_after_answer: suggestedQuestionsAfterAnswerConfig,
       speech_to_text: speechToTextConfig,
       retriever_resource: citationConfig,
+      sensitive_word_avoidance: moderationConfig,
+      external_data_tools: externalDataToolsConfig,
       agent_mode: {
         enabled: true,
         tools: [...postDatasets],
@@ -396,6 +401,9 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
         );
         setChatList(newListWithAnswer);
       },
+      onMessageReplace: (messageReplace) => {
+        responseItem.content = messageReplace.answer;
+      },
       onError() {
         setResponsingFalse();
         // role back placeholder answer
@@ -458,6 +466,8 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
       suggested_questions_after_answer: suggestedQuestionsAfterAnswerConfig,
       speech_to_text: speechToTextConfig,
       retriever_resource: citationConfig,
+      sensitive_word_avoidance: moderationConfig,
+      external_data_tools: externalDataToolsConfig,
       more_like_this: moreLikeThisConfig,
       agent_mode: {
         enabled: true,
@@ -482,9 +492,9 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
       model_config: postModelConfig,
     };
 
-    setCompletionRes("");
-    setMessageId("");
-    const res: string[] = [];
+    setCompletionRes('')
+    setMessageId('')
+    let res: string[] = []
 
     setResponsingTrue();
     sendCompletionMessage(appId, data, {
@@ -492,6 +502,10 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
         res.push(data);
         setCompletionRes(res.join(""));
         setMessageId(messageId);
+      },
+      onMessageReplace: (messageReplace) => {
+        res = [messageReplace.answer];
+        setCompletionRes(res.join(""));
       },
       onCompleted() {
         setResponsingFalse();
@@ -536,6 +550,7 @@ const Debug: FC<IDebug> = ({ hasSetAPIKEY = true, onSetting }) => {
         <PromptValuePanel
           appType={mode as AppType}
           onSend={sendTextCompletion}
+          inputs={inputs}
         />
       </div>
       <div className="flex flex-col grow">

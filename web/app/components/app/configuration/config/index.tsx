@@ -1,24 +1,26 @@
-"use client";
-import type { FC } from "react";
-import React, { useRef } from "react";
-import { useContext } from "use-context-selector";
-import produce from "immer";
-import { useBoolean, useScroll } from "ahooks";
-import DatasetConfig from "../dataset-config";
-import ChatGroup from "../features/chat-group";
-import ExperienceEnchanceGroup from "../features/experience-enchance-group";
-import Toolbox from "../toolbox";
-import HistoryPanel from "../config-prompt/conversation-histroy/history-panel";
-import AddFeatureBtn from "./feature/add-feature-btn";
-import ChooseFeature from "./feature/choose-feature";
-import useFeature from "./feature/use-feature";
-import AdvancedModeWaring from "@/app/components/app/configuration/prompt-mode/advanced-mode-waring";
-import ConfigContext from "@/context/debug-configuration";
-import ConfigPrompt from "@/app/components/app/configuration/config-prompt";
-import ConfigVar from "@/app/components/app/configuration/config-var";
-import type { PromptVariable } from "@/models/debug";
-import { AppType, ModelModeType } from "@/types/app";
-import { useProviderContext } from "@/context/provider-context";
+'use client'
+import type { FC } from 'react'
+import React, { useRef } from 'react'
+import { useContext } from 'use-context-selector'
+import produce from 'immer'
+import { useBoolean, useScroll } from 'ahooks'
+import DatasetConfig from '../dataset-config'
+import Tools from '../tools'
+import ChatGroup from '../features/chat-group'
+import ExperienceEnchanceGroup from '../features/experience-enchance-group'
+import Toolbox from '../toolbox'
+import HistoryPanel from '../config-prompt/conversation-histroy/history-panel'
+import AddFeatureBtn from './feature/add-feature-btn'
+import ChooseFeature from './feature/choose-feature'
+import useFeature from './feature/use-feature'
+import AdvancedModeWaring from '@/app/components/app/configuration/prompt-mode/advanced-mode-waring'
+import ConfigContext from '@/context/debug-configuration'
+import ConfigPrompt from '@/app/components/app/configuration/config-prompt'
+import ConfigVar from '@/app/components/app/configuration/config-var'
+import type { PromptVariable } from '@/models/debug'
+import { AppType, ModelModeType } from '@/types/app'
+import { useProviderContext } from '@/context/provider-context'
+import { useModalContext } from '@/context/modal-context'
 
 const Config: FC = () => {
   const {
@@ -44,9 +46,12 @@ const Config: FC = () => {
     setSpeechToTextConfig,
     citationConfig,
     setCitationConfig,
-  } = useContext(ConfigContext);
-  const isChatApp = mode === AppType.chat;
-  const { speech2textDefaultModel } = useProviderContext();
+    moderationConfig,
+    setModerationConfig,
+  } = useContext(ConfigContext)
+  const isChatApp = mode === AppType.chat
+  const { speech2textDefaultModel } = useProviderContext()
+  const { setShowModerationSettingModal } = useModalContext()
 
   const promptTemplate = modelConfig.configs.prompt_template;
   const promptVariables = modelConfig.configs.prompt_variables;
@@ -119,7 +124,36 @@ const Config: FC = () => {
         })
       );
     },
-  });
+    moderation: moderationConfig.enabled,
+    setModeration: (value) => {
+      setModerationConfig(produce(moderationConfig, (draft) => {
+        draft.enabled = value
+      }))
+      if (value && !moderationConfig.type) {
+        setShowModerationSettingModal({
+          payload: {
+            enabled: true,
+            type: 'keywords',
+            config: {
+              keywords: '',
+              inputs_config: {
+                enabled: true,
+                preset_response: '',
+              },
+            },
+          },
+          onSaveCallback: setModerationConfig,
+          onCancelCallback: () => {
+            setModerationConfig(produce(moderationConfig, (draft) => {
+              draft.enabled = false
+              showChooseFeatureTrue()
+            }))
+          },
+        })
+        showChooseFeatureFalse()
+      }
+    },
+  })
 
   const hasChatConfig =
     isChatApp &&
@@ -179,6 +213,8 @@ const Config: FC = () => {
         {/* Dataset */}
         <DatasetConfig />
 
+        <Tools />
+
         {/* Chat History */}
         {isAdvancedMode &&
           isChatApp &&
@@ -216,12 +252,11 @@ const Config: FC = () => {
         {moreLikeThisConfig.enabled && <ExperienceEnchanceGroup />}
 
         {/* Toolbox */}
-        {hasToolbox && (
-          <Toolbox
-            searchToolConfig={false}
-            sensitiveWordAvoidanceConifg={false}
-          />
-        )}
+        {
+          moderationConfig.enabled && (
+            <Toolbox showModerationSettings />
+          )
+        }
       </div>
     </>
   );

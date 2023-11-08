@@ -10,12 +10,14 @@ import type {
   DatasetConfigs,
   Inputs,
   ModelConfig,
+  ModerationConfig,
   MoreLikeThisConfig,
   PromptConfig,
   PromptItem,
   SpeechToTextConfig,
   SuggestedQuestionsAfterAnswerConfig,
 } from "@/models/debug";
+import type { ExternalDataTool } from "@/models/common";
 import type { DataSet } from "@/models/datasets";
 import { ModelModeType } from "@/types/app";
 import {
@@ -67,6 +69,10 @@ type IDebugConfiguration = {
   setSpeechToTextConfig: (speechToTextConfig: SpeechToTextConfig) => void;
   citationConfig: CitationConfig;
   setCitationConfig: (citationConfig: CitationConfig) => void;
+  moderationConfig: ModerationConfig;
+  setModerationConfig: (moderationConfig: ModerationConfig) => void;
+  externalDataToolsConfig: ExternalDataTool[];
+  setExternalDataToolsConfig: (externalDataTools: ExternalDataTool[]) => void;
   formattingChanged: boolean;
   setFormattingChanged: (formattingChanged: boolean) => void;
   inputs: Inputs;
@@ -143,6 +149,12 @@ const DebugConfigurationContext = createContext<IDebugConfiguration>({
     enabled: false,
   },
   setCitationConfig: () => {},
+  moderationConfig: {
+    enabled: false,
+  },
+  setModerationConfig: () => {},
+  externalDataToolsConfig: [],
+  setExternalDataToolsConfig: () => {},
   formattingChanged: false,
   setFormattingChanged: () => {},
   inputs: {},
@@ -171,6 +183,7 @@ const DebugConfigurationContext = createContext<IDebugConfiguration>({
     suggested_questions_after_answer: null,
     speech_to_text: null,
     retriever_resource: null,
+    sensitive_word_avoidance: null,
     dataSets: [],
   },
   setModelConfig: () => {},
