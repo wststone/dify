@@ -111,11 +111,6 @@
   dependencies:
     tslib "^2.4.0"
 
-"@fortawesome/fontawesome-free@^6.0.0":
-  version "6.4.2"
-  resolved "https://registry.npmmirror.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.4.2.tgz#36b6a9cb5ffbecdf89815c94d0c0ffa489ac5ecb"
-  integrity sha512-m5cPn3e2+FDCOgi1mz0RexTUvvQibBebOUlUlW0+YrMjDTPkiJ6VTKukA1GRsvRw+12KyJndNjj0O4AgTxm2Pg==
-
 "@headlessui/react@^1.7.13":
   version "1.7.15"
   resolved "https://registry.npmjs.org/@headlessui/react/-/react-1.7.15.tgz"
@@ -3612,45 +3607,10 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-mermaid-isomorphic@^2.0.0:
-  version "2.1.1"
-  resolved "https://registry.npmmirror.com/mermaid-isomorphic/-/mermaid-isomorphic-2.1.1.tgz#2ba929018391058869aa52848f09238918a3e715"
-  integrity sha512-iShQaYYfGYakKs6fbwVjaTAaTVYm02aIvq8QZJFZMEJ18it2YMhW7QF23jLc1SgXHfVLbeWVoQ27jar2X8KP9g==
-  dependencies:
-    "@fortawesome/fontawesome-free" "^6.0.0"
-    mermaid "^10.0.0"
-    playwright-core "^1.0.0"
-
 mermaid@10.4.0:
   version "10.4.0"
   resolved "https://registry.npmjs.org/mermaid/-/mermaid-10.4.0.tgz"
   integrity sha512-4QCQLp79lvz7UZxow5HUX7uWTPJOaQBVExduo91tliXC7v78i6kssZOPHxLL+Xs30KU72cpPn3g3imw/xm/gaw==
-  dependencies:
-    "@braintree/sanitize-url" "^6.0.1"
-    "@types/d3-scale" "^4.0.3"
-    "@types/d3-scale-chromatic" "^3.0.0"
-    cytoscape "^3.23.0"
-    cytoscape-cose-bilkent "^4.1.0"
-    cytoscape-fcose "^2.1.0"
-    d3 "^7.4.0"
-    d3-sankey "^0.12.3"
-    dagre-d3-es "7.0.10"
-    dayjs "^1.11.7"
-    dompurify "^3.0.5"
-    elkjs "^0.8.2"
-    khroma "^2.0.0"
-    lodash-es "^4.17.21"
-    mdast-util-from-markdown "^1.3.0"
-    non-layered-tidy-tree-layout "^2.0.2"
-    stylis "^4.1.3"
-    ts-dedent "^2.2.0"
-    uuid "^9.0.0"
-    web-worker "^1.2.0"
-
-mermaid@^10.0.0:
-  version "10.6.0"
-  resolved "https://registry.npmmirror.com/mermaid/-/mermaid-10.6.0.tgz#151af64fb7c6cf1f8a5c403c53c6151832268b87"
-  integrity sha512-Hcti+Q2NiWnb2ZCijSX89Bn2i7TCUwosBdIn/d+u63Sz7y40XU6EKMctT4UX4qZuZGfKGZpfOeim2/KTrdR7aQ==
   dependencies:
     "@braintree/sanitize-url" "^6.0.1"
     "@types/d3-scale" "^4.0.3"
@@ -4265,11 +4225,6 @@ mimic-fn@^4.0.0:
   resolved "https://registry.npmjs.org/mimic-fn/-/mimic-fn-4.0.0.tgz"
   integrity sha512-vqiC06CuhBTUdZH+RYl8sFrL096vA45Ok5ISO6sE/Mr1jRbGH4Csnhi8f3wKVl7x8mO4Au7Ir9D3Oyv1VYMFJw==
 
-mini-svg-data-uri@^1.0.0:
-  version "1.4.4"
-  resolved "https://registry.npmmirror.com/mini-svg-data-uri/-/mini-svg-data-uri-1.4.4.tgz#8ab0aabcdf8c29ad5693ca595af19dd2ead09939"
-  integrity sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==
-
 minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
   version "3.1.2"
   resolved "https://registry.npmjs.org/minimatch/-/minimatch-3.1.2.tgz"
@@ -4638,11 +4593,6 @@ pirates@^4.0.1:
   resolved "https://registry.npmjs.org/pirates/-/pirates-4.0.5.tgz"
   integrity sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==
 
-playwright-core@^1.0.0:
-  version "1.39.0"
-  resolved "https://registry.npmmirror.com/playwright-core/-/playwright-core-1.39.0.tgz#efeaea754af4fb170d11845b8da30b2323287c63"
-  integrity sha512-+k4pdZgs1qiM+OUkSjx96YiKsXsmb59evFoqv8SKO067qBA+Z2s/dCzJij/ZhdQcs2zlTAgRKfeiiLm8PQ2qvw==
-
 postcss-import@^15.1.0:
   version "15.1.0"
   resolved "https://registry.npmjs.org/postcss-import/-/postcss-import-15.1.0.tgz"
@@ -4971,21 +4921,6 @@ rehype-katex@^7.0.0:
     hast-util-from-html-isomorphic "^2.0.0"
     hast-util-to-text "^4.0.0"
     katex "^0.16.0"
-    unist-util-visit-parents "^6.0.0"
-    vfile "^6.0.0"
-
-rehype-mermaid@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmmirror.com/rehype-mermaid/-/rehype-mermaid-2.0.1.tgz#a605e11287569b8f0bbda0a6ee71dd36d612024c"
-  integrity sha512-VSicCihg994Al3QMuIrHzFt2+BxQq6VP4riGGP0XUxtYM8Fhv8ZMdlBIPsX26iudeodBUWLGh84aOp1+xwoiJw==
-  dependencies:
-    "@types/hast" "^3.0.0"
-    hast-util-from-html-isomorphic "^2.0.0"
-    hast-util-to-text "^4.0.0"
-    mermaid-isomorphic "^2.0.0"
-    mini-svg-data-uri "^1.0.0"
-    space-separated-tokens "^2.0.0"
-    unified "^11.0.0"
     unist-util-visit-parents "^6.0.0"
     vfile "^6.0.0"
 

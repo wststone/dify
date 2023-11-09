@@ -4,7 +4,6 @@ import RemarkMath from "remark-math";
 import RemarkBreaks from "remark-breaks";
 import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
-import RehypeMermaid from "rehype-mermaid";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierHeathLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import type { RefObject } from "react";
@@ -87,7 +86,7 @@ export function Markdown(props: { content: string }) {
     <div className="markdown-body">
       <ReactMarkdown
         remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
-        rehypePlugins={[RehypeKatex, RehypeMermaid]}
+        rehypePlugins={[RehypeKatex]}
         components={{
           img: (props) => (
             <img
@@ -151,7 +150,6 @@ export function Markdown(props: { content: string }) {
             );
           },
         }}
-        linkTarget={"_blank"}
       >
         {/* Markdown detect has problem. */}
         {props.content}
