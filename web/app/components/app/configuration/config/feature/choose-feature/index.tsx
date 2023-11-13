@@ -1,4 +1,5 @@
 "use client";
+
 import type { FC } from "react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -10,6 +11,8 @@ import SuggestedQuestionsAfterAnswerIcon from "@/app/components/app/configuratio
 import { Microphone01 } from "@/app/components/base/icons/src/vender/solid/mediaAndDevices";
 import { Citations } from "@/app/components/base/icons/src/vender/solid/editor";
 import { FileSearch02 } from "@/app/components/base/icons/src/vender/solid/files";
+import { LightBulbIcon } from "@heroicons/react/24/solid";
+
 type IConfig = {
   openingStatement: boolean;
   openingSuggestions: boolean;
