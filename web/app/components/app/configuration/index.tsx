@@ -25,19 +25,19 @@ import type {
 } from '@/models/debug'
 import type { ExternalDataTool } from '@/models/common'
 import type { DataSet } from '@/models/datasets'
-import type { ModelConfig as BackendModelConfig } from '@/types/app'
+import type { ModelConfig as BackendModelConfig, VisionSettings } from '@/types/app'
 import ConfigContext from '@/context/debug-configuration'
 import ConfigModel from '@/app/components/app/configuration/config-model'
 import Config from '@/app/components/app/configuration/config'
 import Debug from '@/app/components/app/configuration/debug'
 import Confirm from '@/app/components/base/confirm'
-import { ProviderEnum } from '@/app/components/header/account-setting/model-page/declarations'
+import { ModelFeature, ProviderEnum } from '@/app/components/header/account-setting/model-page/declarations'
 import { ToastContext } from '@/app/components/base/toast'
 import { fetchAppDetail, updateAppModelConfig } from '@/service/apps'
 import { promptVariablesToUserInputsForm, userInputsFormToPromptVariables } from '@/utils/model-config'
 import { fetchDatasets } from '@/service/datasets'
 import { useProviderContext } from '@/context/provider-context'
-import { AppType, ModelModeType } from '@/types/app'
+import { AppType, ModelModeType, Resolution, TransferMethod } from '@/types/app'
 import { FlipBackward } from '@/app/components/base/icons/src/vender/line/arrows'
 import { PromptMode } from '@/models/debug'
 import { DEFAULT_CHAT_PROMPT_CONFIG, DEFAULT_COMPLETION_PROMPT_CONFIG } from '@/config'
@@ -229,25 +229,23 @@ const Configuration: FC = () => {
     );
   };
 
-  const { textGenerationModelList } = useProviderContext();
-  const hasSetCustomAPIKEY = !!textGenerationModelList?.find(
-    ({ model_provider: provider }) => {
-      if (provider.provider_type === "system" && provider.quota_type === "paid")
-        return true;
+  const { textGenerationModelList } = useProviderContext()
+  const currModel = textGenerationModelList.find(item => item.model_name === modelConfig.model_id)
+  const hasSetCustomAPIKEY = !!textGenerationModelList?.find(({ model_provider: provider }) => {
+    if (provider.provider_type === 'system' && provider.quota_type === 'paid')
+      return true
 
-      if (provider.provider_type === "custom") return true;
+    if (provider.provider_type === 'custom')
+      return true
 
-      return false;
-    }
-  );
-  const isTrailFinished =
-    !hasSetCustomAPIKEY &&
-    textGenerationModelList
-      .filter(({ model_provider: provider }) => provider.quota_type === "trial")
-      .every(({ model_provider: provider }) => {
-        const { quota_used, quota_limit } = provider;
-        return quota_used === quota_limit;
-      });
+    return false
+  })
+  const isTrailFinished = !hasSetCustomAPIKEY && textGenerationModelList
+    .filter(({ model_provider: provider }) => provider.quota_type === 'trial')
+    .every(({ model_provider: provider }) => {
+      const { quota_used, quota_limit } = provider
+      return quota_used === quota_limit
+    })
 
   // Fill old app data missing model mode.
   useEffect(() => {
@@ -308,11 +306,8 @@ const Configuration: FC = () => {
     id: modelId,
     provider,
     mode: modeMode,
-  }: {
-    id: string;
-    provider: ProviderEnum;
-    mode: ModelModeType;
-  }) => {
+    features,
+  }: { id: string; provider: ProviderEnum; mode: ModelModeType; features: string[] }) => {
     if (isAdvancedMode) {
       const appMode = mode;
 
@@ -341,18 +336,36 @@ const Configuration: FC = () => {
       draft.mode = modeMode;
     });
 
-    setModelConfig(newModelConfig);
-  };
+    setModelConfig(newModelConfig)
+    const supportVision = features && features.includes(ModelFeature.vision)
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    setVisionConfig({
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      ...visionConfig,
+      enabled: supportVision,
+    }, true)
+  }
+
+  const isShowVisionConfig = !!currModel?.features.includes(ModelFeature.vision)
+  const [visionConfig, doSetVisionConfig] = useState({
+    enabled: false,
+    number_limits: 2,
+    detail: Resolution.low,
+    transfer_methods: [TransferMethod.local_file],
+  })
+
+  const setVisionConfig = (config: VisionSettings, notNoticeFormattingChanged?: boolean) => {
+    doSetVisionConfig(config)
+    if (!notNoticeFormattingChanged)
+      setFormattingChanged(true)
+  }
 
   useEffect(() => {
-    fetchAppDetail({ url: "/apps", id: appId }).then(async (res) => {
-      setMode(res.mode);
-      const modelConfig = res.model_config;
-      const promptMode =
-        modelConfig.prompt_type === PromptMode.advanced
-          ? PromptMode.advanced
-          : PromptMode.simple;
-      doSetPromptMode(promptMode);
+    fetchAppDetail({ url: '/apps', id: appId }).then(async (res: any) => {
+      setMode(res.mode)
+      const modelConfig = res.model_config
+      const promptMode = modelConfig.prompt_type === PromptMode.advanced ? PromptMode.advanced : PromptMode.simple
+      doSetPromptMode(promptMode)
       if (promptMode === PromptMode.advanced) {
         setChatPromptConfig(
           modelConfig.chat_prompt_config ||
@@ -443,6 +456,10 @@ const Configuration: FC = () => {
         },
         completionParams: model.completion_params,
       }
+
+      if (modelConfig.file_upload)
+        setVisionConfig(modelConfig.file_upload.image, true)
+
       syncToPublishedConfig(config)
       setPublishedConfig(config)
       setDatasetConfigs(modelConfig.dataset_configs)
@@ -554,7 +571,10 @@ const Configuration: FC = () => {
         completion_params: completionParams as any,
       },
       dataset_configs: datasetConfigs,
-    };
+      file_upload: {
+        image: visionConfig,
+      },
+    }
 
     if (isAdvancedMode) {
       data.chat_prompt_config = chatPromptConfig;
@@ -662,6 +682,9 @@ const Configuration: FC = () => {
       datasetConfigs,
       setDatasetConfigs,
       hasSetContextVar,
+      isShowVisionConfig,
+      visionConfig,
+      setVisionConfig,
     }}
     >
       <>

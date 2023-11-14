@@ -16,14 +16,12 @@ import type {
   PromptItem,
   SpeechToTextConfig,
   SuggestedQuestionsAfterAnswerConfig,
-} from "@/models/debug";
-import type { ExternalDataTool } from "@/models/common";
-import type { DataSet } from "@/models/datasets";
-import { ModelModeType } from "@/types/app";
-import {
-  DEFAULT_CHAT_PROMPT_CONFIG,
-  DEFAULT_COMPLETION_PROMPT_CONFIG,
-} from "@/config";
+} from '@/models/debug'
+import type { ExternalDataTool } from '@/models/common'
+import type { DataSet } from '@/models/datasets'
+import type { VisionSettings } from '@/types/app'
+import { ModelModeType, Resolution, TransferMethod } from '@/types/app'
+import { DEFAULT_CHAT_PROMPT_CONFIG, DEFAULT_COMPLETION_PROMPT_CONFIG } from '@/config'
 
 type IDebugConfiguration = {
   appId: string;
@@ -89,10 +87,13 @@ type IDebugConfiguration = {
   setDataSets: (dataSet: DataSet[]) => void;
   showSelectDataSet: () => void;
   // dataset config
-  datasetConfigs: DatasetConfigs;
-  setDatasetConfigs: (config: DatasetConfigs) => void;
-  hasSetContextVar: boolean;
-};
+  datasetConfigs: DatasetConfigs
+  setDatasetConfigs: (config: DatasetConfigs) => void
+  hasSetContextVar: boolean
+  isShowVisionConfig: boolean
+  visionConfig: VisionSettings
+  setVisionConfig: (visionConfig: VisionSettings) => void
+}
 
 const DebugConfigurationContext = createContext<IDebugConfiguration>({
   appId: "",
@@ -199,6 +200,14 @@ const DebugConfigurationContext = createContext<IDebugConfiguration>({
   },
   setDatasetConfigs: () => {},
   hasSetContextVar: false,
-});
+  isShowVisionConfig: false,
+  visionConfig: {
+    enabled: false,
+    number_limits: 2,
+    detail: Resolution.low,
+    transfer_methods: [TransferMethod.remote_url],
+  },
+  setVisionConfig: () => {},
+})
 
 export default DebugConfigurationContext;

@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-"use client";
-import type { FC } from "react";
-import React, { useEffect, useRef, useState } from "react";
-import cn from "classnames";
-import { useTranslation } from "react-i18next";
-import { useContext } from "use-context-selector";
-import produce from "immer";
-import { useBoolean, useGetState } from "ahooks";
-import AppUnavailable from "../../base/app-unavailable";
-import { checkOrSetAccessToken } from "../utils";
-import useConversation from "./hooks/use-conversation";
-import s from "./style.module.css";
-import { ToastContext } from "@/app/components/base/toast";
-import Sidebar from "@/app/components/share/chat/sidebar";
-import ConfigSence from "@/app/components/share/chat/config-scence";
-import Header from "@/app/components/share/header";
+'use client'
+import type { FC } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import cn from 'classnames'
+import useSWR from 'swr'
+import { useTranslation } from 'react-i18next'
+import { useContext } from 'use-context-selector'
+import produce from 'immer'
+import { useBoolean, useGetState } from 'ahooks'
+import AppUnavailable from '../../base/app-unavailable'
+import { checkOrSetAccessToken } from '../utils'
+import useConversation from './hooks/use-conversation'
+import s from './style.module.css'
+import { ToastContext } from '@/app/components/base/toast'
+import Sidebar from '@/app/components/share/chat/sidebar'
+import ConfigSence from '@/app/components/share/chat/config-scence'
+import Header from '@/app/components/share/header'
 import {
   delConversation,
   fetchAppInfo,
@@ -22,26 +23,27 @@ import {
   fetchChatList,
   fetchConversations,
   fetchSuggestedQuestions,
+  generationConversationName,
   pinConversation,
   sendChatMessage,
   stopChatMessageResponding,
   unpinConversation,
   updateFeedback,
-} from "@/service/share";
-import type { ConversationItem, SiteInfo } from "@/models/share";
-import type {
-  PromptConfig,
-  SuggestedQuestionsAfterAnswerConfig,
-} from "@/models/debug";
-import type { Feedbacktype, IChatItem } from "@/app/components/app/chat/type";
-import Chat from "@/app/components/app/chat";
-import { changeLanguage } from "@/i18n/i18next-config";
-import useBreakpoints, { MediaType } from "@/hooks/use-breakpoints";
-import Loading from "@/app/components/base/loading";
-import { replaceStringWithValues } from "@/app/components/app/configuration/prompt-value-panel";
-import { userInputsFormToPromptVariables } from "@/utils/model-config";
-import type { InstalledApp } from "@/models/explore";
-import Confirm from "@/app/components/base/confirm";
+} from '@/service/share'
+import type { ConversationItem, SiteInfo } from '@/models/share'
+import type { PromptConfig, SuggestedQuestionsAfterAnswerConfig } from '@/models/debug'
+import type { Feedbacktype, IChatItem } from '@/app/components/app/chat/type'
+import Chat from '@/app/components/app/chat'
+import { changeLanguage } from '@/i18n/i18next-config'
+import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
+import Loading from '@/app/components/base/loading'
+import { replaceStringWithValues } from '@/app/components/app/configuration/prompt-value-panel'
+import { userInputsFormToPromptVariables } from '@/utils/model-config'
+import type { InstalledApp } from '@/models/explore'
+import Confirm from '@/app/components/base/confirm'
+import type { VisionFile, VisionSettings } from '@/types/app'
+import { Resolution, TransferMethod } from '@/types/app'
+import { fetchFileUploadConfig } from '@/service/common'
 
 export type IMainProps = {
   isInstalledApp?: boolean;
@@ -69,6 +71,12 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
   // in mobile, show sidebar by click button
   const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] =
     useBoolean(false);
+  const [visionConfig, setVisionConfig] = useState<VisionSettings>({
+      enabled: false,
+      number_limits: 2,
+      detail: Resolution.low,
+      transfer_methods: [TransferMethod.local_file],
+    })
   // Can Use metadata(https://beta.nextjs.org/docs/api-reference/metadata) to set title. But it only works in server side client.
   useEffect(() => {
     if (siteInfo?.title) {
@@ -290,7 +298,8 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
             id: `question-${item.id}`,
             content: item.query,
             isAnswer: false,
-          });
+            message_files: item.message_files,
+          })
           newChatList.push({
             id: item.id,
             content: item.answer,
@@ -394,24 +403,22 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
   const fetchInitData = async () => {
     if (!isInstalledApp) await checkOrSetAccessToken();
 
-    return Promise.all([
-      isInstalledApp
-        ? {
-            app_id: installedAppInfo?.id,
-            site: {
-              title: installedAppInfo?.app.name,
-              icon: installedAppInfo?.app.icon,
-              icon_background: installedAppInfo?.app.icon_background,
-              prompt_public: false,
-              copyright: "",
-            },
-            plan: "basic",
-          }
-        : fetchAppInfo(),
-      fetchAllConversations(),
-      fetchAppParams(isInstalledApp, installedAppInfo?.id),
-    ]);
-  };
+    return Promise.all([isInstalledApp
+      ? {
+        app_id: installedAppInfo?.id,
+        site: {
+          title: installedAppInfo?.app.name,
+          icon: installedAppInfo?.app.icon,
+          icon_background: installedAppInfo?.app.icon_background,
+          prompt_public: false,
+          copyright: '',
+        },
+        plan: 'basic',
+      }
+      : fetchAppInfo(), fetchAllConversations(), fetchAppParams(isInstalledApp, installedAppInfo?.id)])
+  }
+
+  const { data: fileUploadConfigResponse } = useSWR(isInstalledApp ? { url: '/files/upload' } : null, fetchFileUploadConfig)
 
   // init
   useEffect(() => {
@@ -437,17 +444,12 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
         );
         setAllConversationList(allConversations);
         // fetch new conversation info
-        const {
-          user_input_form,
-          opening_suggestions,
-          opening_statement: introduction,
-          suggested_questions_after_answer,
-          speech_to_text,
-          retriever_resource,
-          sensitive_word_avoidance,
-        }: any = appParams;
-        const prompt_variables =
-          userInputsFormToPromptVariables(user_input_form);
+        const { user_input_form, opening_statement: introduction,opening_suggestions, suggested_questions_after_answer, speech_to_text, retriever_resource, file_upload, sensitive_word_avoidance }: any = appParams
+        setVisionConfig({
+          ...file_upload.image,
+          image_file_size_limit: appParams?.system_parameters?.image_file_size_limit,
+        })
+        const prompt_variables = userInputsFormToPromptVariables(user_input_form)
         if (siteInfo.default_language)
           changeLanguage(siteInfo.default_language);
 
@@ -533,18 +535,13 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
     return !hasEmptyInput;
   };
 
-  const [controlFocus, setControlFocus] = useState(0);
-  const [isShowSuggestion, setIsShowSuggestion] = useState(false);
-  const doShowSuggestion = isShowSuggestion && !isResponsing;
-  const [suggestQuestions, setSuggestQuestions] = useState<string[]>([]);
-  const [messageTaskId, setMessageTaskId] = useState("");
-  const [hasStopResponded, setHasStopResponded, getHasStopResponded] =
-    useGetState(false);
-  const [
-    isResponsingConIsCurrCon,
-    setIsResponsingConCurrCon,
-    getIsResponsingConIsCurrCon,
-  ] = useGetState(true);
+  const [controlFocus, setControlFocus] = useState(0)
+  const [isShowSuggestion, setIsShowSuggestion] = useState(false)
+  const doShowSuggestion = isShowSuggestion && !isResponsing
+  const [suggestQuestions, setSuggestQuestions] = useState<string[]>([])
+  const [messageTaskId, setMessageTaskId] = useState('')
+  const [hasStopResponded, setHasStopResponded, getHasStopResponded] = useGetState(false)
+  const [isResponsingConIsCurrCon, setIsResponsingConCurrCon, getIsResponsingConIsCurrCon] = useGetState(true)
 
   const handleSend = async (message: string) => {
     if (isResponsing) {
@@ -554,11 +551,29 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
       });
       return;
     }
-    const data = {
+
+    if (files?.find(item => item.transfer_method === TransferMethod.local_file && !item.upload_file_id)) {
+      notify({ type: 'info', message: t('appDebug.errorMessage.waitForImgUpload') })
+      return false
+    }
+
+    const data: Record<string, any> = {
       inputs: currInputs,
       query: message,
       conversation_id: isNewConversation ? null : currConversationId,
-    };
+    }
+
+    if (visionConfig.enabled && files && files?.length > 0) {
+      data.files = files.map((item) => {
+        if (item.transfer_method === TransferMethod.local_file) {
+          return {
+            ...item,
+            url: '',
+          }
+        }
+        return item
+      })
+    }
 
     // qustion
     const questionId = `question-${Date.now()}`;
@@ -566,7 +581,8 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
       id: questionId,
       content: message,
       isAnswer: false,
-    };
+      message_files: files,
+    }
 
     const placeholderAnswerId = `answer-placeholder-${Date.now()}`;
     const placeholderAnswerItem = {
@@ -607,59 +623,47 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
           if (isFirstMessage && newConversationId)
             tempNewConversationId = newConversationId;
 
-          setMessageTaskId(taskId);
-          // has switched to other conversation
-          if (prevTempNewConversationId !== getCurrConversationId()) {
-            setIsResponsingConCurrCon(false);
-            return;
-          }
-          // closesure new list is outdated.
-          const newListWithAnswer = produce(
-            getChatList().filter(
-              (item) =>
-                item.id !== responseItem.id && item.id !== placeholderAnswerId
-            ),
-            (draft) => {
-              if (!draft.find((item) => item.id === questionId))
-                draft.push({ ...questionItem });
+        setMessageTaskId(taskId)
+        // has switched to other conversation
+        if (prevTempNewConversationId !== getCurrConversationId()) {
+          setIsResponsingConCurrCon(false)
+          return
+        }
+        // closesure new list is outdated.
+        const newListWithAnswer = produce(
+          getChatList().filter(item => item.id !== responseItem.id && item.id !== placeholderAnswerId),
+          (draft) => {
+            if (!draft.find(item => item.id === questionId))
+              draft.push({ ...questionItem })
 
-              draft.push({ ...responseItem });
-            }
-          );
-          setChatList(newListWithAnswer);
-        },
-        async onCompleted(hasError?: boolean) {
-          setResponsingFalse();
-          if (hasError) return;
+            draft.push({ ...responseItem })
+          })
+        setChatList(newListWithAnswer)
+      },
+      async onCompleted(hasError?: boolean) {
+        if (hasError)
+          return
 
-          if (getConversationIdChangeBecauseOfNew()) {
-            const { data: allConversations }: any =
-              await fetchAllConversations();
-            setAllConversationList(allConversations);
-            noticeUpdateList();
-          }
-          setConversationIdChangeBecauseOfNew(false);
-          resetNewConversationInputs();
-          setChatNotStarted();
-          setCurrConversationId(tempNewConversationId, appId, true);
-          if (
-            getIsResponsingConIsCurrCon() &&
-            suggestedQuestionsAfterAnswerConfig?.enabled &&
-            !getHasStopResponded()
-          ) {
-            const { data }: any = await fetchSuggestedQuestions(
-              responseItem.id,
-              isInstalledApp,
-              installedAppInfo?.id
-            );
-            setSuggestQuestions(data);
-            setIsShowSuggestion(true);
-          }
-        },
-        onMessageEnd: isInstalledApp
-          ? (messageEnd) => {
-              if (!isInstalledApp) return;
-              responseItem.citation = messageEnd.retriever_resources;
+        if (getConversationIdChangeBecauseOfNew()) {
+          const { data: allConversations }: any = await fetchAllConversations()
+          setAllConversationList(allConversations)
+          noticeUpdateList()
+        }
+        setConversationIdChangeBecauseOfNew(false)
+        resetNewConversationInputs()
+        setChatNotStarted()
+        setCurrConversationId(tempNewConversationId, appId, true)
+        if (getIsResponsingConIsCurrCon() && suggestedQuestionsAfterAnswerConfig?.enabled && !getHasStopResponded()) {
+          const { data }: any = await fetchSuggestedQuestions(responseItem.id, isInstalledApp, installedAppInfo?.id)
+          setSuggestQuestions(data)
+          setIsShowSuggestion(true)
+        }
+      },
+      onMessageEnd: isInstalledApp
+        ? (messageEnd) => {
+          if (!isInstalledApp)
+            return
+          responseItem.citation = messageEnd.retriever_resources
 
               const newListWithAnswer = produce(
                 getChatList().filter(
@@ -839,48 +843,32 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
             plan={plan}
           ></ConfigSence>
 
-          {hasSetInputs && (
-            <div
-              className={cn(
-                doShowSuggestion
-                  ? "pb-[140px]"
-                  : isResponsing
-                  ? "pb-[113px]"
-                  : "pb-[76px]",
-                "relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden"
-              )}
-            >
-              <div className="h-full overflow-y-auto" ref={chatListDomRef}>
-                <Chat
-                  chatList={chatList}
-                  onSend={handleSend}
-                  isHideFeedbackEdit
-                  onFeedback={handleFeedback}
-                  isResponsing={isResponsing}
-                  canStopResponsing={
-                    !!messageTaskId && isResponsingConIsCurrCon
-                  }
-                  abortResponsing={async () => {
-                    await stopChatMessageResponding(
-                      appId,
-                      messageTaskId,
-                      isInstalledApp,
-                      installedAppInfo?.id
-                    );
-                    setHasStopResponded(true);
-                    setResponsingFalse();
-                  }}
-                  checkCanSend={checkCanSend}
-                  controlFocus={controlFocus}
-                  isShowSuggestion={doShowSuggestion}
-                  openingSuggestions={openingSuggestions}
-                  suggestionList={suggestQuestions}
-                  isShowSpeechToText={speechToTextConfig?.enabled}
-                  isShowCitation={citationConfig?.enabled && isInstalledApp}
-                />
-              </div>
-            </div>
-          )}
+          {
+            hasSetInputs && (
+              <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden')}>
+                <div className='h-full overflow-y-auto' ref={chatListDomRef}>
+                  <Chat
+                    chatList={chatList}
+                    onSend={handleSend}
+                    isHideFeedbackEdit
+                    onFeedback={handleFeedback}
+                    isResponsing={isResponsing}
+                    canStopResponsing={!!messageTaskId && isResponsingConIsCurrCon}
+                    abortResponsing={async () => {
+                      await stopChatMessageResponding(appId, messageTaskId, isInstalledApp, installedAppInfo?.id)
+                      setHasStopResponded(true)
+                      setResponsingFalse()
+                    }}
+                    checkCanSend={checkCanSend}
+                    controlFocus={controlFocus}
+                    isShowSuggestion={doShowSuggestion}
+                    suggestionList={suggestQuestions}
+                    isShowSpeechToText={speechToTextConfig?.enabled}
+                    isShowCitation={citationConfig?.enabled && isInstalledApp}
+                  />
+                </div>
+              </div>)
+          }
 
           {isShowConfirm && (
             <Confirm
