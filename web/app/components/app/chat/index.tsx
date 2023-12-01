@@ -434,7 +434,6 @@ const Chat: FC<IChatProps> = ({
               }
             </div>
           </div>
-        </div>
       )}
     </div>
   );
