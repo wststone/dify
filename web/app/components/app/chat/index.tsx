@@ -32,7 +32,7 @@ import {
   type VisionFile,
   type VisionSettings,
 } from "@/types/app";
-import { useImageFiles } from "@/app/components/base/image-uploader/hooks";
+import { useClipboardUploader, useImageFiles } from "@/app/components/base/image-uploader/hooks";
 
 export type IChatProps = {
   configElem?: React.ReactNode;
