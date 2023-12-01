@@ -1,19 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-"use client";
-import type { FC } from "react";
-import React, { useEffect, useRef, useState } from "react";
-import cn from "classnames";
-import { useTranslation } from "react-i18next";
-import { useContext } from "use-context-selector";
-import produce from "immer";
-import { useBoolean, useGetState } from "ahooks";
-import AppUnavailable from "../../base/app-unavailable";
-import useConversation from "./hooks/use-conversation";
-import s from "./style.module.css";
-import Init from "./init";
-import { ToastContext } from "@/app/components/base/toast";
-import Sidebar from "@/app/components/share/chat/sidebar";
+'use client'
+import type { FC } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { useContext } from 'use-context-selector'
+import produce from 'immer'
+import { useBoolean, useGetState } from 'ahooks'
+import AppUnavailable from '../../base/app-unavailable'
+import useConversation from './hooks/use-conversation'
+import Init from './init'
+import { ToastContext } from '@/app/components/base/toast'
+import Sidebar from '@/app/components/share/chat/sidebar'
 import {
   delConversation,
   fetchAppParams,
@@ -799,6 +798,7 @@ const Main: FC<IMainProps> = () => {
         onUnpin={handleUnpin}
         controlUpdateList={controlUpdateConversationList}
         onDelete={handleDelete}
+        onStartChat={() => handleConversationIdChange('-1')}
       />
     );
   };
@@ -839,8 +839,11 @@ const Main: FC<IMainProps> = () => {
 
   return (
     <div className="bg-gray-100">
+    <div className='bg-gray-100 h-full'>
       <div
-        className={"flex rounded-t-2xl bg-white overflow-hidden rounded-b-2xl"}
+        className={cn(
+          'flex rounded-t-2xl bg-white overflow-hidden rounded-b-2xl h-full',
+        )}
         style={{
           boxShadow:
             "0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)",

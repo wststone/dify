@@ -22,6 +22,18 @@ export enum ModelModeType {
   'unset' = '',
 }
 
+export enum RETRIEVE_TYPE {
+  oneWay = 'single',
+  multiWay = 'multiple',
+}
+
+export enum RETRIEVE_METHOD {
+  semantic = 'semantic_search',
+  fullText = 'full_text_search',
+  hybrid = 'hybrid_search',
+  invertedIndex = 'invertedIndex',
+}
+
 export type VariableInput = {
   key: string
   name: string
@@ -286,6 +298,8 @@ export enum TransferMethod {
   remote_url = 'remote_url',
 }
 
+export const ALLOW_FILE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp', 'gif']
+
 export type VisionSettings = {
   enabled: boolean
   number_limits: number
@@ -302,6 +316,7 @@ export type ImageFile = {
   progress: number
   url: string
   base64Url?: string
+  deleted?: boolean
 }
 
 export type VisionFile = {
@@ -310,4 +325,16 @@ export type VisionFile = {
   transfer_method: TransferMethod
   url: string
   upload_file_id: string
+}
+
+export type RetrievalConfig = {
+  search_method: RETRIEVE_METHOD
+  reranking_enable: boolean
+  reranking_model: {
+    reranking_provider_name: string
+    reranking_model_name: string
+  }
+  top_k: number
+  score_threshold_enabled: boolean
+  score_threshold: number
 }

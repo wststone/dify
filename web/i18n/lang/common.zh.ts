@@ -65,8 +65,8 @@ const translation = {
         '影响常见与罕见词汇使用。\n值较大时，倾向于生成不常见的词汇和表达方式。\n值越小，更倾向于使用常见和普遍接受的词汇或短语。',
       max_tokens: '单次回复限制 max_tokens',
       max_tokensTip:
-        '用于限制回复的最大长度，以 token 为单位。\n较大的值可能会限制给提示词、聊天记录和数据集留出的空间。\n建议将其设置在三分之二以下。',
-      maxTokenSettingTip: '您设置的最大 tokens 数较大，可能会导致 prompt、用户问题、数据集内容没有 token 空间进行处理，建议设置到 2/3 以下。',
+        '用于限制回复的最大长度，以 token 为单位。\n较大的值可能会限制给提示词、聊天记录和知识库留出的空间。\n建议将其设置在三分之二以下。',
+      maxTokenSettingTip: '您设置的最大 tokens 数较大，可能会导致 prompt、用户问题、知识库内容没有 token 空间进行处理，建议设置到 2/3 以下。',
       setToCurrentModelMaxTokenTip: '最大令牌数更新为当前模型最大的令牌数 {{maxToken}} 的 80%。',
       stop_sequences: '停止序列 stop_sequences',
       stop_sequencesTip: '最多四个序列，API 将停止生成更多的 token。返回的文本将不包含停止序列。',
@@ -86,10 +86,10 @@ const translation = {
     apps: '构建应用',
     plugins: '插件',
     pluginsTips: '集成第三方插件或创建与 ChatGPT 兼容的 AI 插件。',
-    datasets: '数据集',
+    datasets: '知识库',
     datasetsTips: '即将到来: 上传自己的长文本数据，或通过 Webhook 集成自己的数据源',
     newApp: '创建应用',
-    newDataset: '创建数据集',
+    newDataset: '创建知识库',
   },
   userProfile: {
     settings: '设置',
@@ -223,6 +223,9 @@ const translation = {
     },
   },
   modelProvider: {
+    notConfigured: '系统模型尚未完全配置，部分功能可能无法使用。',
+    systemModelSettings: '系统模型设置',
+    systemModelSettingsLink: '为什么需要设置系统模型？',
     selectModel: '选择您的模型',
     setupModelFirst: '请先设置您的模型',
     systemReasoningModel: {
@@ -231,11 +234,15 @@ const translation = {
     },
     embeddingModel: {
       key: 'Embedding 模型',
-      tip: '设置数据集文档嵌入处理的默认模型，检索和导入数据集均使用该Embedding模型进行向量化处理，切换后将导致已导入的数据集与问题之间的向量维度不一致，从而导致检索失败。为避免检索失败，请勿随意切换该模型。',
+      tip: '设置知识库文档嵌入处理的默认模型，检索和导入知识库均使用该Embedding模型进行向量化处理，切换后将导致已导入的知识库与问题之间的向量维度不一致，从而导致检索失败。为避免检索失败，请勿随意切换该模型。',
     },
     speechToTextModel: {
       key: '语音转文本模型',
       tip: '设置对话中语音转文字输入的默认使用模型。',
+    },
+    rerankModel: {
+      key: 'Rerank 模型',
+      tip: '重排序模型将根据候选文档列表与用户问题语义匹配度进行重新排序，从而改进语义排序的结果',
     },
     quota: '额度',
     searchModel: '搜索模型',
@@ -244,6 +251,9 @@ const translation = {
     showMoreModelProvider: '显示更多模型提供商',
     selector: {
       tip: '该模型已被删除。请添模型或选择其他模型。',
+      emptyTip: '无可用模型',
+      emptySetting: '请前往设置进行配置',
+      rerankTip: '请设置 Rerank 模型',
     },
     card: {
       quota: '额度',
@@ -276,7 +286,7 @@ const translation = {
     connect: '绑定',
     notion: {
       title: 'Notion',
-      description: '使用 Notion 作为数据集的数据源。',
+      description: '使用 Notion 作为知识库的数据源。',
       connectedWorkspace: '已绑定工作空间',
       addWorkspace: '添加工作空间',
       connected: '已绑定',
@@ -351,9 +361,9 @@ const translation = {
   },
   datasetMenus: {
     documents: '文档',
-    hitTesting: '命中测试',
+    hitTesting: '召回测试',
     settings: '设置',
-    emptyTip: ' 数据集尚未关联，请前往应用程序或插件完成关联。',
+    emptyTip: ' 知识库尚未关联，请前往应用程序或插件完成关联。',
     viewDoc: '查看文档',
     relatedApp: '个关联应用',
   },
@@ -380,11 +390,11 @@ const translation = {
     conversationNameCanNotEmpty: '会话名称必填',
     citation: {
       title: '引用',
-      linkToDataset: '跳转至数据集',
+      linkToDataset: '跳转至知识库',
       characters: '字符：',
-      hitCount: '命中次数：',
+      hitCount: '召回次数：',
       vectorHash: '向量哈希：',
-      hitScore: '命中得分：',
+      hitScore: '召回得分：',
     },
   },
   promptEditor: {
@@ -395,7 +405,7 @@ const translation = {
         desc: '插入上下文模板',
       },
       modal: {
-        title: '有 {{num}} 个数据集在上下文中',
+        title: '有 {{num}} 个知识库在上下文中',
         add: '添加上下文',
         footer: '您可以在下面的“上下文”部分中管理上下文。',
       },
@@ -438,6 +448,7 @@ const translation = {
     pasteImageLink: '粘贴图片链接',
     pasteImageLinkInputPlaceholder: '将图像链接粘贴到此处',
     pasteImageLinkInvalid: '图片链接无效',
+    imageUpload: '图片上传',
   },
 }
 

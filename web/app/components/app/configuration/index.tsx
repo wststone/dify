@@ -8,6 +8,7 @@ import produce from 'immer'
 import { useBoolean, useGetState } from 'ahooks'
 import cn from 'classnames'
 import { clone, isEqual } from 'lodash-es'
+import { CodeBracketIcon } from '@heroicons/react/20/solid'
 import Button from '../../base/button'
 import Loading from '../../base/loading'
 import s from './style.module.css'
@@ -37,13 +38,15 @@ import { fetchAppDetail, updateAppModelConfig } from '@/service/apps'
 import { promptVariablesToUserInputsForm, userInputsFormToPromptVariables } from '@/utils/model-config'
 import { fetchDatasets } from '@/service/datasets'
 import { useProviderContext } from '@/context/provider-context'
-import { AppType, ModelModeType, Resolution, TransferMethod } from '@/types/app'
+import { AppType, ModelModeType, RETRIEVE_TYPE, Resolution, TransferMethod } from '@/types/app'
 import { FlipBackward } from '@/app/components/base/icons/src/vender/line/arrows'
 import { PromptMode } from '@/models/debug'
 import { DEFAULT_CHAT_PROMPT_CONFIG, DEFAULT_COMPLETION_PROMPT_CONFIG } from '@/config'
 import SelectDataSet from '@/app/components/app/configuration/dataset-config/select-dataset'
 import I18n from '@/context/i18n'
 import { useModalContext } from '@/context/modal-context'
+import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
+import Drawer from '@/app/components/base/drawer'
 
 type PublichConfig = {
   modelConfig: ModelConfig;
@@ -137,6 +140,11 @@ const Configuration: FC = () => {
   });
 
   const [datasetConfigs, setDatasetConfigs] = useState<DatasetConfigs>({
+    retrieval_model: RETRIEVE_TYPE.oneWay,
+    reranking_model: {
+      reranking_provider_name: '',
+      reranking_model_name: '',
+    },
     top_k: 2,
     score_threshold: {
       enable: false,
@@ -462,7 +470,10 @@ const Configuration: FC = () => {
 
       syncToPublishedConfig(config)
       setPublishedConfig(config)
-      setDatasetConfigs(modelConfig.dataset_configs)
+      setDatasetConfigs({
+        retrieval_model: RETRIEVE_TYPE.oneWay,
+        ...modelConfig.dataset_configs,
+      })
       setHasFetchedDetail(true)
     })
   }, [appId])
@@ -765,13 +776,13 @@ const Configuration: FC = () => {
             <div className="w-1/2 min-w-[560px] shrink-0">
               <Config />
             </div>
-            <div className="relative w-1/2  grow h-full overflow-y-auto  py-4 px-6 bg-gray-50 flex flex-col rounded-tl-2xl border-t border-l" style={{ borderColor: 'rgba(0, 0, 0, 0.02)' }}>
+            {!isMobile && <div className="relative w-1/2 grow h-full overflow-y-auto py-4 px-6 bg-gray-50 flex flex-col rounded-tl-2xl border-t border-l" style={{ borderColor: 'rgba(0, 0, 0, 0.02)' }}>
               <Debug
                 hasSetAPIKEY={hasSetAPIKEY}
                 onSetting={() => setShowAccountSettingModal({ payload: 'provider' })}
                 inputs={inputs}
               />
-            </div>
+            </div>}
           </div>
         </div>
         {showConfirm && (
@@ -818,6 +829,15 @@ const Configuration: FC = () => {
               hideHistoryModal();
             }}
           />
+        )}
+        {isMobile && (
+          <Drawer showClose isOpen={isShowDebugPanel} onClose={hideDebugPanel} mask footer={null} panelClassname='!bg-gray-50'>
+            <Debug
+              hasSetAPIKEY={hasSetAPIKEY}
+              onSetting={() => setShowAccountSettingModal({ payload: 'provider' })}
+              inputs={inputs}
+            />
+          </Drawer>
         )}
       </>
     </ConfigContext.Provider>

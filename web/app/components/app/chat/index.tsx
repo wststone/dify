@@ -111,6 +111,7 @@ const Chat: FC<IChatProps> = ({
     onImageLinkLoadSuccess,
     onClear,
   } = useImageFiles();
+  const { onPaste } = useClipboardUploader({ onUpload, visionConfig, files })
   const isUseInputMethod = useRef(false);
 
   const [query, setQuery] = React.useState("");
@@ -379,56 +380,59 @@ const Chat: FC<IChatProps> = ({
                   block w-full px-2 pr-[118px] py-[7px] leading-5 max-h-none text-sm text-gray-700 outline-none appearance-none resize-none
                   ${visionConfig?.enabled && "pl-12"}
                 `}
-              value={query}
-              onChange={handleContentChange}
-              onKeyUp={handleKeyUp}
-              onKeyDown={handleKeyDown}
-              autoSize
-            />
-            <div className="absolute bottom-2 right-2 flex items-center h-8">
-              <div
-                className={`${s.count} mr-4 h-5 leading-5 text-sm bg-gray-50 text-gray-500`}
-              >
-                {query.trim().length}
-              </div>
-              {query ? (
-                <div
-                  className="flex justify-center items-center w-8 h-8 cursor-pointer hover:bg-gray-100 rounded-lg"
-                  onClick={() => setQuery("")}
-                >
-                  <XCircle className="w-4 h-4 text-[#98A2B3]" />
-                </div>
-              ) : isShowSpeechToText ? (
-                <div
-                  className="group flex justify-center items-center w-8 h-8 hover:bg-primary-50 rounded-lg cursor-pointer"
-                  onClick={handleVoiceInputShow}
-                >
-                  <Microphone01 className="block w-4 h-4 text-gray-500 group-hover:hidden" />
-                  <Microphone01Solid className="hidden w-4 h-4 text-primary-600 group-hover:block" />
-                </div>
-              ) : null}
-              <div className="mx-2 w-[1px] h-4 bg-black opacity-5" />
-              {isMobile ? (
-                sendBtn
-              ) : (
-                <TooltipPlus
-                  popupContent={
-                    <div>
-                      <div>{t("common.operation.send")} Enter</div>
-                      <div>{t("common.operation.lineBreak")} Shift Enter</div>
-                    </div>
-                  }
-                >
-                  {sendBtn}
-                </TooltipPlus>
-              )}
-            </div>
-            {voiceInputShow && (
-              <VoiceInput
-                onCancel={() => setVoiceInputShow(false)}
-                onConverted={(text) => setQuery(text)}
+                value={query}
+                onChange={handleContentChange}
+                onKeyUp={handleKeyUp}
+                onKeyDown={handleKeyDown}
+                onPaste={onPaste}
+                autoSize
               />
-            )}
+              <div className="absolute bottom-2 right-2 flex items-center h-8">
+                <div className={`${s.count} mr-4 h-5 leading-5 text-sm bg-gray-50 text-gray-500`}>{query.trim().length}</div>
+                {
+                  query
+                    ? (
+                      <div className='flex justify-center items-center w-8 h-8 cursor-pointer hover:bg-gray-100 rounded-lg' onClick={() => setQuery('')}>
+                        <XCircle className='w-4 h-4 text-[#98A2B3]' />
+                      </div>
+                    )
+                    : isShowSpeechToText
+                      ? (
+                        <div
+                          className='group flex justify-center items-center w-8 h-8 hover:bg-primary-50 rounded-lg cursor-pointer'
+                          onClick={handleVoiceInputShow}
+                        >
+                          <Microphone01 className='block w-4 h-4 text-gray-500 group-hover:hidden' />
+                          <Microphone01Solid className='hidden w-4 h-4 text-primary-600 group-hover:block' />
+                        </div>
+                      )
+                      : null
+                }
+                <div className='mx-2 w-[1px] h-4 bg-black opacity-5' />
+                {isMobile
+                  ? sendBtn
+                  : (
+                    <TooltipPlus
+                      popupContent={
+                        <div>
+                          <div>{t('common.operation.send')} Enter</div>
+                          <div>{t('common.operation.lineBreak')} Shift Enter</div>
+                        </div>
+                      }
+                    >
+                      {sendBtn}
+                    </TooltipPlus>
+                  )}
+              </div>
+              {
+                voiceInputShow && (
+                  <VoiceInput
+                    onCancel={() => setVoiceInputShow(false)}
+                    onConverted={text => setQuery(text)}
+                  />
+                )
+              }
+            </div>
           </div>
         </div>
       )}

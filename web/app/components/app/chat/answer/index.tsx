@@ -424,7 +424,7 @@ const Answer: FC<IAnswerProps> = ({
                   )}
               </div>
             </div>
-            {more && <MoreInfo more={more} isQuestion={false} />}
+            {more && <MoreInfo className='invisible group-hover:visible' more={more} isQuestion={false} />}
           </div>
         </div>
       </div>
