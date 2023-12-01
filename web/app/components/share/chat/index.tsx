@@ -542,7 +542,7 @@ const Main: FC<IMainProps> = ({ isInstalledApp = false, installedAppInfo }) => {
   const [hasStopResponded, setHasStopResponded, getHasStopResponded] = useGetState(false)
   const [isResponsingConIsCurrCon, setIsResponsingConCurrCon, getIsResponsingConIsCurrCon] = useGetState(true)
 
-  const handleSend = async (message: string) => {
+  const handleSend = async (message: string, files?: VisionFile[]) => {
     if (isResponsing) {
       notify({
         type: "info",
