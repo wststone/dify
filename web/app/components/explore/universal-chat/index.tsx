@@ -838,7 +838,6 @@ const Main: FC<IMainProps> = () => {
   if (!promptConfig) return <Loading type="app" />;
 
   return (
-    <div className="bg-gray-100">
     <div className='bg-gray-100 h-full'>
       <div
         className={cn(
