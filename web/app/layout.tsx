@@ -11,6 +11,12 @@ export const metadata = {
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no',
 }
 
+// add polyfill
+if (!Object.hasOwn) {
+  Object.hasOwn = (obj, prop) =>
+    Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
 const LocaleLayout = ({
   children,
 }: {
